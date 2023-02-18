@@ -1,6 +1,7 @@
 # Predicting A Garment Factory's Productivity
 
 Authors: Justin Wong, Longfei Guan, Anirudh Duggal
+
 Adapted with permission from STAT 301 Project by: Justin Wong, Kevin Yu, Zhuoran (Serena) Feng, Fiona Chang
 
 ## Summary
@@ -35,7 +36,7 @@ To answer this question, we performed data analysis to search for the most optim
 ...
 
 ## Viewing the Analysis
-The associated analysis files can be found [here](https://github.com/jw327/dsci-310-group-01/blob/add-data-and-analysis-files/garments_factory_analysis.ipynb).
+The corresponding analysis file is found [here](https://github.com/jw327/dsci-310-group-01/blob/add-data-and-analysis-files/garments_factory_analysis.ipynb).
 
 ## Dependencies
 Using R version 4.2.2
@@ -49,7 +50,10 @@ Using R version 4.2.2
 - `r-glmnet=4.1-6`
 
 ## License 
-Licensed under ...
+Licensed under the MIT License and
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a><br />
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />
 
 
 ## Permission From Past Teammates
