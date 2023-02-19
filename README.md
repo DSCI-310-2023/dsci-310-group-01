@@ -24,6 +24,7 @@ To answer this question, we performed data analysis to search for the most optim
    cd dsci-310-group-01
    ```
 4. Run the following to set up the environment:
+   ```
    docker run -p 8888:8888 --rm -v /$(pwd):/home/jovyan/work/project jwong086/dsci-310-group-01
    ```
 
