@@ -21,19 +21,12 @@ To answer this question, we performed data analysis to search for the most optim
    ```
 3. Use the terminal/command line to navigate to the root directory of the project
    ```
-   cd DSCI-310-Group-01
+   cd dsci-310-group-01
    ```
 4. Run the following to set up the environment:
-...
+   docker run -p 8888:8888 --rm -v /$(pwd):/home/jovyan/work/project jwong086/dsci-310-group-01
    ```
 
-### Without Docker
-1. Install the listed [dependencies](#dependencies) below
-2. Clone this repository
-   ```
-   git clone https://github.com/jw327/dsci-310-group-01.git
-   ```
-...
 
 ## Viewing the Analysis
 The corresponding analysis file is found [here](https://github.com/jw327/dsci-310-group-01/blob/add-data-and-analysis-files/garments_factory_analysis.ipynb).
