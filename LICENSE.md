@@ -39,7 +39,7 @@ Notices:
 
 ## MIT License for Project Code
 
-Copyright (c) 2023 jw327
+Copyright (c) 2023 Justin Wong, Longfei Guan, Anirudh Duggal
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
