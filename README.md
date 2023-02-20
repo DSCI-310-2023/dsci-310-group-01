@@ -40,7 +40,6 @@ Using R version 4.2.2
 - `r-broom=1.0.3`
 - `r-ggally=2.1.2`
 - `r-leaps=3.1`
-- `r-faraway=1.0.8`
 - `r-glmnet=4.1-6`
 
 ## License 
