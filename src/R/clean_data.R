@@ -4,8 +4,6 @@
 #' @param columns Names of columns to be dropped from the data frame
 #'
 #' @return A new data frame from the old data frame with selected columns dropped 
-#' 
-#' @export
 #'
 #' @examples
 #' clean_data(garments_data, c("data","team"))
