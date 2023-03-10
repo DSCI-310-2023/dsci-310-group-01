@@ -1,6 +1,6 @@
 library(testthat)
-source("../../../src/R/clean_data.R")
-source("../../../src/tests/testthat/helper-clean_data.R")
+source("../src/R/clean_data.R")
+source("../src/tests/testthat/helper-clean_data.R")
 
 test_that("clean_data should report an error when a data frame is not inputed", {
   expect_error(clean_data(5, "team"))
