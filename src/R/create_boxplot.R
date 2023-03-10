@@ -17,14 +17,21 @@
 #' create_boxplot(garment_data, day, actual_productivity, "Actual Productivity by Day of the Week", "Weekend/Weekday", "Actual Productivity")
 
 create_boxplot <- function(data, x_var, y_var, title, x_title, y_title) {
+  if (!is.data.frame(data)) {
+    stop("data must be a data frame. Please try again.")
+  }
+  
+  if (!is.numeric(y_var)) {
+    stop("y_var must be numerical. Please try again.")
+  }
+  
   new_boxplot <- data %>%
-    ggplot(aes(x = x_var, y = y_var)) +
-    geom_boxplot()+
-    ggtitle(title)+
-    labs(x = x_title) +
-    labs(y = y_title)+
-    theme(text = element_text(size = 20),
-          plot.title = element_text(face = "bold"),
-          axis.title = element_text(face = "bold") )
+    ggplot2::ggplot(
+    ggplot2::aes(x = x_var, y = y_var)) +
+    ggplot2::geom_boxplot()+
+    ggplot2::labs(title = title, x = x_title, y = y_title)+
+    ggplot2::theme(text =  ggplot2::element_text(size = 20),
+          plot.title =  ggplot2::element_text(face = "bold"),
+          axis.title =  ggplot2::element_text(face = "bold") )
   return(new_boxplot)
 }
