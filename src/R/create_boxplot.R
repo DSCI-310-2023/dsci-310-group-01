@@ -11,6 +11,8 @@
 #' 
 #' @return A ggplot boxplot 
 #'
+#' @export
+#' 
 #' @examples
 #' create_boxplot(garment_data, day, actual_productivity, "Actual Productivity by Day of the Week", "Weekend/Weekday", "Actual Productivity")
 
