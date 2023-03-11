@@ -41,6 +41,7 @@ Using R version 4.2.2
 - `r-ggally=2.1.2`
 - `r-leaps=3.1`
 - `r-glmnet=4.1-6`
+- `r-testthat=3.1.6`
 
 ## License 
 Licensed under the MIT License and
