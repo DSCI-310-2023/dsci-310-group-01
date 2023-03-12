@@ -30,7 +30,7 @@ To answer this question, we performed data analysis to search for the most optim
 
 
 ## Viewing the Analysis
-The corresponding analysis file is found [here](https://github.com/jw327/dsci-310-group-01/notebooks/garments_factory_analysis.ipynb).
+The corresponding analysis file is found [here](https://github.com/jw327/dsci-310-group-01/blob/main/notebooks/garments_factory_analysis.ipynb).
 
 ## Dependencies
 Using R version 4.2.2
