@@ -1,26 +1,30 @@
-#' loads the data from the Internet and saves it locally as a csv file
+#' loads the data from the Internet and returns a data frame
 #'
-#' @param url the path to the input file (a URL).
-#' @param out_dir a path where to write the file
+#' @param url the path to the input file (a string of a URL)
 #'
-#' @return a csv file from the given URL
+#' @return a data frame with the data from the given URL
 #'
 #' @export
 #'
 #' @examples
-#' load_data(garments_data, c("data","team"))
+#' load_data("https://7e6cd356-86ad-4874-abc7-3a69bbbc39e6.filesusr.com/ugd/c5a545_c1b17c070c984dfcb14cf1c3bb0b6e67.csv?dn=garments_worker_productivity.csv")
 
-library(tidyverse)
 
-load_data <- function(url, out_dir) {
-  # Create out_dir if it does not exist
-  if (!dir.exists(dirname(out_dir))) {
-    dir.create(dirname(out_dir), recursive = TRUE)
+load_data <- function(url) {
+  
+  # Check if url is a string
+  if (!is.character(url)) {
+    stop("url must be a string. Please try again.")
   }
-
-  # load data
-  data <- read_csv(url)
-
-  # save data as a csv file
-  write_csv(data, out_dir)
+  
+  # Create tempfile and download file
+  temp <- tempfile()
+  url <- url
+  suppressMessages(download.file(url, temp, mode = "wb"))
+  
+  # Read csv and unlink tempfile
+  data <- read.csv(temp)
+  unlink(temp)
+  return(data)
+  
 }
