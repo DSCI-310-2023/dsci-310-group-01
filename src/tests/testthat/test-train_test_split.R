@@ -1,6 +1,6 @@
 library(testthat)
 source("../src/R/train_test_split.R")
-source("../src/tests/testthat/helper_train_test_split.R")
+source("../src/tests/testthat/helper-train_test_split.R")
 
 test_that("train_test_split should ask the user to input a valid integer", {
   expect_error(train_test_split(test_df, 1.1, "rating"))

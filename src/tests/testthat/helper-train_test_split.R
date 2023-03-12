@@ -8,7 +8,6 @@ genre = c("Action", "Animated", "Animated",
           "Animated", "Animated", "Animated",
           "Horror", "Horror", "War", "War")
 
-percent = 0.6
 col_name = 'rating'
 
 test_df = data.frame(movie, rating, genre)
