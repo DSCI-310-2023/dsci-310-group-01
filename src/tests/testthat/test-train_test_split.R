@@ -12,5 +12,5 @@ test_that("train_test_split should ask the user to enter a valid column name pre
 })
 
 test_that("train_test_split should return two data frames, one for testing and one for training", {
-  expect_type(train_test_split(test_df, 0.5, "genre"), "list")
+  expect_type(train_test_split(test_df, 0.7, "genre"), "list")
 })
