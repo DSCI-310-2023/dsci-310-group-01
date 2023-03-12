@@ -5,6 +5,7 @@
 #'
 #' @param data_frame A data frame or data frame extension (e.g. a tibble).
 #' @param train_percent The percent of the parent dataframe to be train-test split 
+#' @param col_name The column name to group by in the testing dataframe
 #'
 #' @return Two data frames
 #'   A user-input percent of the parent dataframe training dataframe split of the parent dataframe 
