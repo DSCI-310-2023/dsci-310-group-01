@@ -15,7 +15,7 @@
 #'
 #' @examples
 #' splittingData(garment_Data, 0.75)
-train_test_split <- function(df, train_percent, col_name) {
+test_train_split <- function(df, train_percent, col_name) {
   if (!is.data.frame(df)) {
     stop("data must be a data frame. Please try again.")
   }
