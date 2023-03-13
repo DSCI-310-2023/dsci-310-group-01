@@ -7,7 +7,7 @@
 #' @param train_percent The percent of the parent dataframe to be train-test split 
 #' @param col_name The column name to group by in the testing dataframe
 #'
-#' @return Two data frames
+#' @return A list with two data frames
 #'   A user-input percent of the parent dataframe training dataframe split of the parent dataframe 
 #'   A user-input percent's compliment of the parent dataframe testing dataframe split of the parent dataframe 
 #' 
