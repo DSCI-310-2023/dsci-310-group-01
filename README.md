@@ -35,13 +35,13 @@ The corresponding analysis file is found [here](https://github.com/jw327/dsci-31
 ## Dependencies
 Using R version 4.2.2
 
-### R libraries (via. `conda-forge`)
-- `r-tidyverse=1.3.2`
-- `r-broom=1.0.3`
-- `r-ggally=2.1.2`
-- `r-leaps=3.1`
-- `r-glmnet=4.1-6`
-- `r-testthat=3.1.6`
+### R libraries
+- `tidyverse:1.3.2`
+- `broom:1.0.3`
+- `ggally:2.1.2`
+- `leaps:3.1`
+- `glmnet:4.1-6`
+- `testthat:3.1.6`
 
 ## License 
 Licensed under the MIT License and
