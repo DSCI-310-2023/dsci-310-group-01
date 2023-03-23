@@ -1,7 +1,6 @@
 library(testthat)
-source("../src/R/load_data.R")
-source("../src/tests/testthat/helper-load_data.r")
-test_that("load_data should report an error when a string of a URL is not inputed", {
+source("../../src/R/load_data.R")
+test_that("`load_data` should report an error when a string of a URL is not inputed", {
   expect_error(load_data(not_string1))
   expect_error(load_data(c(not_string2)))
 })
