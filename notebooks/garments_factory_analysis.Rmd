@@ -1,0 +1,451 @@
+---
+title: Predicting A Garment Factory's Productivity
+author: "By Justin Wong, Longfei Guan, Anirudh Duggal"
+output:   
+    bookdown::html_document2:
+      default
+---
+
+Adapted with permission from STAT 301 Project by: Justin Wong, Kevin Yu, Zhuoran (Serena) Feng, Fiona Chang
+
+# Summary 
+In this project, we perform a data analysis to determine the factors that impact the predict the productivity of a garment factory. Using forward selection and LASSO, we compare different models and determine which factors are the best in explaining relationships between the factors and the actual productivity of the garment factory. Furthermore, we discuss the implications of our results, the limitations of the project, and propose future  questions that can be asked based on our project.
+
+# Introduction
+The trillion-dollar garment industry is largely fueled by the production and performance of employees that work in manufacturing companies as a labor-intensive, low-skilled industry (Hamja et al., 2019). As the industry is driven by ever-changing consumer demands and fashion trends, the need for manual processes is inevitable. Through statistical inference, we seek to dig deeper into the relationship between important attributes of the garment manufacturing process and its employees’ productivity in the following question: **What factors affect the productivity of a garment factory?** 
+
+The studies: “Enhancing Efficiency and Productivity of Garment Industry by Using Different Techniques” (Rajput et al., 2018) and “The Effect of Lean on Occupational Health and Safety and Productivity in the Garment Industry” (Hamja et al., 2019) will be utilized to help frame our exploration into this data set and provide useful context of the garment industry.
+
+## Attribute Information 
+The data set we will use, called Productivity Prediction of Garment Employees, is sourced from Kaggle.com and outlines following variables that will guide us in answering our question:
+- `date`: Date in MM-DD-YYYY
+- `quarter`: A portion of a month, where each month was divided into 4 quarters
+- `department`: Associated department
+- `day`: Day of the week
+- `team`: Associated team number
+- `targeted_productivity_set`: Daily target productivity set by authority
+- `smv`: Standard Minute Value; allocated time for a task
+- `wip`: Work in progress; includes number of unfinished items for products
+- `over_time`: amount of overtime by each team (minutes)
+- `Incentive`: amount of financial incentive in BDT (Bangladeshi currency)
+- `idle_time`: amount of time where production was interrupted
+- `Idle_men`: number of workers idle due to interrupted production
+- `no_of_style_changes`: number of style changes
+- `no_of_workers`: number of workers in given team
+- `actual_productivity`: actual % of productivity delivered
+
+From this list, `date` and `team` were excluded in our analysis as they are identifiers for the observation, hence not the interest for our research question.
+
+# Methods and Results 
+
+## Preliminary Results
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+# Load Libraries
+suppressPackageStartupMessages({
+library(tidyverse)
+library(broom)
+library(GGally)
+library(leaps)
+library(glmnet)
+    })
+source("../src/R/load_data.R")
+source("../src/R/clean_data.R")
+source("../src/R/create_boxplot.R")
+source("../src/R/train_test_split.R")
+```
+
+```{r}
+# Download file from online source
+data<-load_data("https://7e6cd356-86ad-4874-abc7-3a69bbbc39e6.filesusr.com/ugd/c5a545_c1b17c070c984dfcb14cf1c3bb0b6e67.csv?dn=garments_worker_productivity.csv")
+cat("Table 1: Initial Dataset")
+head(data,3)
+```
+
+```{r}
+# Cleaning the dataset
+data.filtered <- 
+    clean_data(data, c("date", "team")) %>% # removing variables not used (date and team)
+    mutate(wip = ifelse((is.na(wip)), 0, wip)) %>% 
+    mutate(department = ifelse((department == "finishing "), "finishing", department)) %>% # fixing typos for "finishing"
+    mutate(department = ifelse((department == "sweing"), "sewing", department)) %>% # fixing typos for "sewing"
+    mutate(department = as.factor(department)) %>% # change department variable to a factor
+    mutate(day = if_else(day %in% c("Monday", "Tuesday", "Wednesday", "Thursday"), "Weekday", "Weekend")) %>% # editing day variable
+    mutate(half = if_else(quarter %in% c("Quarter1", "Quarter2"), "Half1", "Half2"))  %>%  # creating quarter variable using quarter variable
+    clean_data(., "quarter") %>% # removing quarter variable
+    mutate(day = as.factor(day)) %>% # change day variable to a factor
+    mutate(half = as.factor(half)) # change half variable to a factor
+cat("Table 2: Modified Dataset")
+head(data.filtered,3)
+```
+
+Both the categorical variables `day` and `quarter` were edited becasue they have more than two levels, which leads to difficulties in conducting forward selection. Based on this, `day` was changed into two levels: Weekday and Weekend. Similarilily, `quarter` was used to create the variable `half` with two levels.
+
+```{r}
+# Complete ggpairs for all data
+options(repr.plot.width = 15, repr.plot.height = 10) 
+
+pair_plots <-ggpairs(data.filtered) +
+  theme(
+    text = element_text(size = 15),
+    plot.title = element_text(face = "bold"),
+    axis.title = element_text(face = "bold")
+  )
+cat("Figure 1: ggpairs Plot")
+suppressWarnings(suppressMessages(print(pair_plots)))
+```
+
+From this plot, we can analyze the correlation values between the variables that we are using in our analysis. Based on the correlation values, there appears to be correlation between input variables, which will be addressed later in the analysis.
+Variables with relatively high correlations include `no_of_workers` and `smv`(0.912), `no_of_workers` and `over_time` (0.734), and `over_time` and `smv` (0.675).
+
+The high correlation indicates that the dataset has an issue of multicollinearity. To address this, the variable with the (`no_of_workers`) will be removed from our analysis.
+
+```{r}
+# Remove no_of_workers from data
+data.filtered <- clean_data(data.filtered, "no_of_workers")
+```
+
+```{r}
+options(repr.plot.width = 10, repr.plot.height = 4)
+
+# Boxplot comparing the actual productivity of different day to analyze mean + variance
+day_boxplot <- create_boxplot(data.filtered, data.filtered$day, 
+                              data.filtered$actual_productivity, 
+                              "Actual Productivity by Day of the Week", 
+                              "Weekend/Weekday", "Actual Productivity")
+cat("Figure 2: Actual Productivity by Day of the Week Boxplot")
+day_boxplot
+
+
+# Boxplot to compare the actual productivity of different halves 
+half_boxplot <- create_boxplot(data.filtered, data.filtered$half, 
+                               data.filtered$actual_productivity, 
+                              "Actual Productivity by Half", 
+                              "Half", "Actual Productivity")
+half_boxplot
+cat("Figure 3: Actual Productivity by Half Boxplot")
+
+# Boxplot to compare the actual productivity of different departments.
+department_boxplot <- create_boxplot(data.filtered, data.filtered$department, 
+                                     data.filtered$actual_productivity, 
+                                  "Actual Productivity of Departments", 
+                                  "Department", "Actual Productivity")
+department_boxplot
+cat("Figure 4: Actual Productivity of Departments Boxplot")
+```
+
+The above boxplots show the medians and variances of the discrete factors of interest. Since the above plots show that there are differences in the medians and variances of the factors of interest, it is justified to keep these factors in our analysis for future investigation.
+
+
+```{r}
+options(repr.plot.width = 10, repr.plot.height = 5)
+
+# Histogram for Actual Productivity
+actual_productivity_distribution <- data.filtered %>%
+                                      ggplot(aes(x = actual_productivity)) +
+                                      geom_histogram(bins = 20) +
+                                    ggtitle("Distribution of Actual Productivity")+
+                                      labs(x = "Actual Productivity") +
+                                      labs(y = "Frequency")+ theme(
+                                        text = element_text(size = 20),
+                                        plot.title = element_text(face = "bold"),
+                                        axis.title = element_text(face = "bold") )
+cat("Figure 5: Distribution of Actual Productivity")
+actual_productivity_distribution
+```
+
+Since, the distribution of the actual productivity doesn't seem to have a normal distribution and is slightly left-skewed, an assumption of normality is likely needed in our analysis.
+
+```{r}
+# Checking the normalitiy of the actual_productivity (response variable)
+cat("Figure 5: Q-Q Plot of Actual Productivity")
+qqnorm(data.filtered$actual_productivity)
+qqline(data.filtered$actual_productivity)
+```
+
+The above Q-Q plot was used to determine whether a normality assumption on our response variable is valid, since it is an assumption required for tests used later on. There appears to be tails on both ends, which suggests a left-skewness of the data. Unfortunately, while we have tried different transformations of the data, it did not improve the skewness of this Q-Q plot. So based on what we have learned in this class, we will have to assume normality of the data even though it is a major stretch.
+
+```{r}
+# summary table of actual_productivity for different halves and departments
+summary_table_1 <- data.filtered %>%
+                   group_by(half, department) %>%
+                   summarise(count = n(),
+                             mean = mean(actual_productivity),
+                             median = median(actual_productivity), 
+                             min = min(actual_productivity),
+                             max = max(actual_productivity),
+                             sd = sd(actual_productivity), 
+                            .groups = 'keep'
+                            )
+cat("Table 3: Summary of Actual Productivity for Halves and Departments")
+summary_table_1
+```
+
+This table provides relevant summaries of our data, split into different quarters and departments. Overall, the data seems to be relatively consistent, with a few things to note:
+
+- The relative means and medians are fairly consistent throughout the different departments and halves.
+- The standard deviation for the finishing department is slightly larger than the sewing department.
+
+## Methods: Plan 
+The data set used is trustworthy and reliable since multiple published academic papers used this data set (Imran et al (2019), Rahim et al (2021)). 
+
+Using the data set, we plan to analyze what factors are the most important in productivity. Linear regression will be used to determine the best inference model for the actual productivity of the factory. Using forward selection and LASSO, we plan to compare different models and determine which factors are the best in explaining relationships between the factors and the actual productivity of the garment factory. Additionally, we plan to test our optimal inference model’s performance by splitting the data into training and testing and comparing the corresponding adjusted $R^2$ values with the full model.
+
+We expect that factors such as number of members on the team and targeted productivity may have a higher association with actual productivity. Thus, we expect these factors to be present in the best model for explaining the relationship with the actual productivity.
+
+The results from this report could provide insights to companies in the garment manufacturing sector. Having knowledge on what factors may increase productivity is crucial for any successful business.
+
+## Results 
+
+### Generating the Model with Forward Selection 
+
+```{r}
+# Split the data into two datasets: training dataset (75%) and testing dataset (25%)
+set.seed(20221127)
+
+data.filtered$ID <- 1:nrow(data.filtered)
+new_data<-train_test_split(data.filtered, 0.75, "ID")
+training_data<-as.data.frame(new_data[1])
+testing_data<-as.data.frame(new_data[2])
+
+#Remove ID varaible
+training_data<-clean_data(training_data, "ID")
+testing_data<-clean_data(testing_data, "ID")
+
+cat("Table 4: Training Data")
+head(training_data, 3)
+
+cat("Table 5: Testing Data")
+head(testing_data, 3)
+```
+
+```{r}
+# Use forward selection to select models with different number of input variables
+model_forward_sel <- regsubsets(
+  x = actual_productivity ~ .,
+  nvmax = 12,
+  data = training_data,
+  method = "forward")
+
+model_forward_summary <- summary(model_forward_sel)
+model_forward_summary
+```
+
+```{r}
+# store and examine different evaluation metrics contained in model_forward_summary
+model_forward_summary_df <- tibble(
+  n_input_variables = 1:11,
+  RSQ = model_forward_summary$rsq,
+  RSS = model_forward_summary$rss,
+  ADJ.R2 = model_forward_summary$adjr2
+)
+cat("Table 6: Evaluation Metrics for Forward Selection")
+model_forward_summary_df
+
+#format(model_forward_summary$adjr2, scientific = TRUE)
+```
+
+Adjusted $R^2$ was chosen as the metric used for model selection because it is best suited for our inference model. It compensates for the reduction of the RSS of a larger model making it a more suitable metric than $R^2$.
+
+As shown by the table above, the model with 6 input variables has the highest adj $R^2$ (0.23266), thus this model is chosen as the optimal model. However, its adjusted $R^2$ value is not relatively higher than many of the other models, suggesting that the model may be only slightly better than the others. The selected model will be compared with the full model to test this observation.
+
+The variables selected in the model with 6 input variables  were: `targeted_productivity`, `smv`, `wip`, `incentive`, `idle_men`, and `no_of_style_change`. 
+
+```{r}
+# Find Adj R^2 for chosen optimal model
+cat("Table 7: Summary Table for Selected Model")
+model_selected_1 <- lm(actual_productivity ~ targeted_productivity +
+                    smv + wip + incentive + idle_men + no_of_style_change, 
+                    data = training_data)
+model_selected_summary_1 <- tidy(model_selected_1)
+model_selected_summary_1
+
+
+adj_r_squared_1 <- summary(model_selected_1)$adj.r.squared 
+cat("Adjusted R^2 for Selected Model:")
+adj_r_squared_1
+```
+
+```{r}
+# Checking assumptions of selected model
+cat("Figure 7: Residuals and Q-Q Plot of Selected Model")
+plot(model_selected_1, 1:2)
+```
+
+The residual plot and the Q-Q plot suggests some violations of assumptions needed for our analysis. The residual plot shows slight heteroskedasticity within our model, which violates our equal variance assumption, and the q-q plot suggests a violation in our normality assumption. 
+
+```{r}
+# Find Adj R^2 for chosen full model for future comparison with chosen model
+cat("Table 8: Summary Table for Full Model")
+full_model <- lm(actual_productivity ~ ., data = training_data)
+full_model_summary <- tidy(full_model, 0.95, conf.int = TRUE)
+full_model_summary
+
+adj_r_squared_full <- summary(full_model)$adj.r.squared 
+cat("Adjusted R^2 for Full Model:")
+adj_r_squared_full
+```
+
+The adjusted $R^2$ of the selected model (0.2327) is slightly larger than (0.2300) the full model. This further suggests the selected model is not significantly better than the full model. An F-test will be conducted to test this observation.
+
+```{r}
+# F-test for the full model and the selected model 
+cat("Table 9: F-test for Full and Selected Model")
+anova(model_selected_1, full_model)
+```
+
+Since the p-value is 0.852, at a 5% significance level, there is not enough evidence to reject the null hypothesis that the selected model performs better than the full model.
+
+```{r}
+# Testing Selected Model with Testing Data
+cat("Table 9: Summary Table for Selected Model with Testing Data")
+model_1 <- lm(actual_productivity ~ targeted_productivity +
+                    smv + wip + incentive + idle_men + no_of_style_change, ,
+              data = testing_data)
+model_summary <- tidy(model_1)
+model_summary
+
+adj_r_squared <- summary(model_1)$adj.r.squared 
+cat("Adjusted R^2 for Selected Model Using Testing Data:")
+adj_r_squared
+```
+
+The adjusted $R^2$ suggests that about 17% of the adjusted variation in the response is explained by model. This indicates that the model performs fairly poorly. However, since it was the best model according to our analysis it may suggest that further exploration of this topic is needed. Thus, model selection using LASSO is conducted next.
+
+### Generating the Model with LASSO 
+
+```{r}
+# split datasets into x matrix and y matrix for training and testing
+data_X_train <- training_data %>% select(-"actual_productivity")  %>% data.matrix()
+data_Y_train <- training_data %>% select("actual_productivity")  %>% data.matrix()
+
+data_X_test <- testing_data %>% select(-"actual_productivity")  %>% data.matrix()
+data_Y_test <- testing_data %>% select("actual_productivity")  %>% data.matrix()
+```
+
+```{r}
+# find an "optimal" value of lambda using the function cv.glmnet()
+data_cv_lambda_LASSO <- cv.glmnet(
+  x = data_X_train, y = data_Y_train,
+  alpha = 1)
+```
+
+```{r}
+# visualize how the estimated test-MSE changes for different values of lambda
+cat("Figure 8: Lambda Selection by CV with LASSO")
+plot(data_cv_lambda_LASSO, main = "Lambda Selection by CV with LASSO")
+
+# store the lambda value which provide the minimum estimated test-MSE
+lambda_min_MSE_LASSO <- round(data_cv_lambda_LASSO$lambda.min, 4)
+```
+
+```{r}
+# build a LASSO model 
+data_LASSO_min <- glmnet(
+  x = data_X_train, y = data_Y_train,
+  alpha = 1,
+  lambda = lambda_min_MSE_LASSO
+)
+```
+
+```{r}
+# get the selected input variables by the LASSO model
+variables_selected_LASSO <- as_tibble(as.matrix(coef(data_LASSO_min)),rownames='covariate') %>%
+                              filter(covariate != '(Intercept)' & abs(s0) > 10e-6) %>% 
+                              pull(covariate)
+#variables_selected_LASSO
+```
+
+The variables selected in the model by LASSO were:  `targeted_productivity`, `smv`, `incentive`, `idle_men`, and `no_of_style_change`. 
+
+```{r}
+# the model selected by LASSO
+LASSO_model <- lm(actual_productivity ~ targeted_productivity +
+                    smv + incentive + idle_men + no_of_style_change, 
+                  data = training_data)
+```
+
+```{r}
+# Checking assumptions of model selected by LASSO
+cat("Figure 9: Residuals and Q-Q Plot of Model Selected by LASSO")
+plot(LASSO_model, 1:2)
+```
+
+Much like the model chosen by forward selection, the residual plot for the model selected by LASSO suggests unequal variance, and the Q-Q plot above suggests a normality violation of the variables. Attempts to mitigate this issue have failed, meaning we will have to continue with our analysis with very strong assumptions of our data.
+
+```{r}
+# Adjusted R^2 for the model selected by LASSO
+adj_r_squared_LASSO <- summary(LASSO_model)$adj.r.squared 
+cat("Adjusted R^2 for Selected Model Using LASSO:")
+adj_r_squared_LASSO
+```
+
+```{r}
+# F-test for full model and LASSO model
+cat("Table 10: F-test for Full and Model Selected with LASSO")
+anova(LASSO_model, full_model)
+```
+
+Since the p-value is 0.351, at a 5% significance level, there is not sufficient evidence to reject the null hypothesis that the selected model by LASSO performs better than the full model.
+
+```{r}
+cat("Table 11: Summary Table for Selected Model with Testing Data")
+model_2 <- lm(actual_productivity ~ targeted_productivity +
+                    smv + incentive + idle_men + no_of_style_change, 
+              data = testing_data)
+model_summary_2 <- tidy(model_2)
+model_summary_2
+
+adj_r_squared_2 <- summary(model_2)$adj.r.squared 
+cat("Adjusted R^2 for LASSO Selected Model Using Testing Data:")
+adj_r_squared_2
+```
+
+The adjusted $R^2$ suggests that about 16.9% of the adjusted variation in the response is explained by model. This reveals that forward selection performed slightly better in producing an inference model for the actual productivity of the factory.
+
+# Discussion
+
+## Findings 
+### Model Selection with Forward Selection and LASSO 
+
+The variables selected from forward selection in our model were: `targeted_productivity`, `smv`, `wip`, `incentive`, `idle_men`, and `no_of_style_change`. The variables selected from LASSO in our model were:  `targeted_productivity`, `smv`, `incentive`, `idle_men`, and `no_of_style_change`.
+
+Both of the models produced a fairly poor adjusted $R^2$ values of 0.17 and 0.169 when testing the model with the testing data. Additionally, neither of the selected models were significantly better than the full model according to the corresponding F-tests. 
+
+### Limitations 
+The relatively poor performance of both selected models and the non-significant results from the corresponding F-tests may be due to the assumptions made throughout our analysis. The techniques learned in this class were likely not able to overcome the limitations and assumptions made throughout our analysis. As shown by the various model assumption plots (Figures 5,7,9) throughout the analysis, the assumptions of equal variance and normality were used when analyzing the response variable, as well as both of the models selected via forward selection and LASSO. 
+
+The assumption of normality was required for the F-tests used near the end of our analysis. With our diagnostic plots shown earlier showing some violation of the assumption, it may impact our results when testing for whether the models we selected were statistically different than the full model.
+
+Another factor that may have led to our results being non-significant relative to the full model is the response variable (`actual productivity`) ranges from 0 to 1 while our explanatory variables have much broader ranges. In addition, the variables `wip`, `incentive`, `idle_time`, and `idle_men`, used in our analysis contained a large amount of 0s with a few observed large values leading to abnormal distributions of values.
+
+These issues regarding normality and heteroskedasticity in our data and models may have resulted in inaccurate standard errors and thus induced lower precision from coefficient estimates, as well as inaccurate p-values and F-statistics. These limitations may have affected the statistical significance of our results.
+
+
+### Impact 
+
+The common variables included from both forward selection and LASSO were `targeted_productivity`, `smv`, `incentive`, `idle_men`, and `no_of_style_change`. The models suggest that the daily set productivity, allocated time for a task, financial incentive, number of idle workers, and number of style changes have the strongest correlation with actual productivity. These findings can drive business decisions of those in management and leadership positions as they could potentially manipulate each variable to drive the highest amount of productivity, and thus, profit. For example, a higher monetary incentive per item will motivate workers to be more efficient, and can have higher payoffs overall, though one should be cautious of unsatisfactory work.
+
+The study “Enhancing Efficiency and Productivity of Garment Industry by Using Different Techniques” relays methods of increasing productivity by eliminating factors such as idle time, related to the `idle_men` variable in our model. These methods include time study, implementing a visual management system, and standardized work procedures which increased efficiency by 8.07% (Rajput et al., 2018). Focussing on decreasing the number of style changes through process management can also increase productivity where less set-up and transition times between patterns reduce time wasted. “The effect of lean on occupational health and safety and productivity in the garment industry” outlines lean methodology where waste is minimized by reducing variability on all fronts of production (Hamja et al., 2019). While there is evidence of positive effects on productivity by using lean, the literature also points to a potential negative impact on workers’ health– which morally outweighs monetary profit (Hamja et al., 2019).
+
+
+### Future Questions 
+
+This study prompts further questions about the garment industry. 
+- How can we improve these variables to have a more efficient productivity? 
+- What is the threshold of which productivity is maximized? 
+- What other variables outside of this dataset, particularly involving technological innovation, affect productivity? - What is the environmental impact of increasing productivity?
+
+# References 
+
+Siri, S. (2021, April 6). Productivity prediction of garment employees. Kaggle. Retrieved November 4, 2022, from https://www.kaggle.com/datasets/ishadss/productivity-prediction-of-garment-employees 
+
+Hamja, A., Maalouf, M., &amp; Hasle, P. (2019). The effect of lean on occupational health and safety and productivity in the garment industry – a literature review. Production &amp; Manufacturing Research, 7(1), 316–334. https://doi.org/10.1080/21693277.2019.1620652
+
+Imran, A. A., Amin, M. N., Islam Rifat, M. R., & Mehreen, S. (2019). Deep Neural Network Approach for Predicting the Productivity of Garment Employees. 2019 6th International Conference on Control, Decision and Information Technologies (CoDIT). https://doi.org/10.1109/CoDIT.2019.8820486
+
+Rahim, M. S., Imran, A. A., & Ahmed, T. (2021). Mining the Productivity Data of Garment Industry. International Journal of Business Intelligence and Data Mining, 1(1), 1. https://doi.org/10.1504/IJBIDM.2021.118183
+
+Rajput, D., Kakde, M., Chandurkar, P., & Raichurkar, P. P. (2018). Enhancing efficiency and productivity of garment industry by using different techniques. International Journal on Textile Engineering and Processes, 4(1), 5-8.
+
+
