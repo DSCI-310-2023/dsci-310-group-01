@@ -7,10 +7,10 @@ The summary statistics from the model chosen is saved as a csv file named 'forwa
 The adjusted $R^2$ of the model chosen is saved as a csv file named 'adj_R2_forward_selection_model.csv'
 The plot of the residuals and qq-plot of the chosen model is saved as a png file named 'forward_selection_assumptions_plot.png'
 The summary statistics from the full model is saved as a csv file named 'full_model_summary.csv'
-The adjusted $R^2$ of the full model is saved as a csv file named 'adj_R2_forward_selection_model.csv'
+The adjusted $R^2$ of the full model is saved as a csv file named 'adj_R2_full_model.csv'
 The results of the F-test between the chosen model and the full model is saved as a csv file named 'forward_selection_f_test.csv'
 The summary statistics on the test set from the model chosen is saved as a csv file named 'forward_selection_test_summary'
-The adjusted $R^2$ of the model chosen on the test set is saved as a csv file named 'adj_R2_forward_selection_model.csv'
+The adjusted $R^2$ of the model chosen on the test set is saved as a csv file named 'adj_R2_test.csv'
 
 Usage: src/R/forward_selection.R <train> <test> <out_dir>
 " -> doc
