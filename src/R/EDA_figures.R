@@ -10,7 +10,7 @@ The distribution of actual productivity is saved as a png file named 'actual_pro
 The QQ plot of actual productivity is saved as a png file named 'actual_productivity_qqplot.png'.
 The summary table of actual productivity for different halves and departments is saved as a png file named 'summary_table_1.png'.
 
-Usage: src/R/forward_selection.R <data> <out_dir>
+Usage: src/R/EDA_figures.R <data> <out_dir>
 " -> doc
 
 suppressPackageStartupMessages({
