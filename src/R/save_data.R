@@ -21,4 +21,4 @@ opt <- docopt(doc)
 
 data<-load_data(doc$file_path)
 
-write_csv(data, paste0(opt$out_dir, "//data.csv"))
+write_csv(data, paste0(opt$out_dir, "/data.csv"))
