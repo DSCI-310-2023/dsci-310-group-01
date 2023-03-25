@@ -23,11 +23,15 @@ To answer this question, we performed data analysis to search for the most optim
    ```
    cd dsci-310-group-01
    ```
-4. Run the following to set up the environment:
+4. Run the the following to obtain the docker image:
    ```
-   docker run --rm -p 8787:8787 -e PASSWORD=x  -v /$(pwd):/home/rstudio/project jwong086/dsci-310-group-01
+   docker build --tag dsci-310-group-01-env . 
    ```
-5. Use the following credentials to sign in:
+5. Run the following to set up the environment:
+   ```
+   docker run --rm -p 8787:8787 -e PASSWORD=x  -v /$(pwd):/home/rstudio/project dsci-310-group-01-env
+   ```
+6. Use the following credentials to sign in:
    ```
    - USERNAME = rstudio
    - PASSWORD = x
