@@ -29,8 +29,8 @@ To answer this question, we performed data analysis to search for the most optim
    ```
 5. Use the following credentials to sign in:
    ```
-  - USERNAME = rstudio
-  - PASSWORD = x
+   - USERNAME = rstudio
+   - PASSWORD = x
    ```
 ## Viewing the Analysis
 The corresponding analysis files are found [here](https://github.com/jw327/dsci-310-group-01/tree/main/notebooks).
