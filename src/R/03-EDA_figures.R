@@ -8,10 +8,13 @@ The boxplot of the actual productivity by half is saved as a png file named 'hal
 The boxplot of the actual productivity by department is saved as a png file named 'department_boxplot.png'.
 The distribution of actual productivity is saved as a png file named 'actual_productivity_distribution.png'.
 The QQ plot of actual productivity is saved as a png file named 'actual_productivity_qqplot.png'.
-The summary table of actual productivity for different halves and departments is saved as a png file named 'summary_table_1.png'.
+The summary table of actual productivity for different halves and departments is saved as a csv file named 'summary_table_1.csv'.
 
 Usage: src/R/EDA_figures.R <data> <out_dir>
 " -> doc
+
+source("/clean_data.R")
+source("/create_boxplot.R")
 
 suppressPackageStartupMessages({
   library(tidyverse)
@@ -95,5 +98,4 @@ ggsave(paste0(opt$out_dir, "/actual_productivity_distribution.png"),
        actual_productivity_distribution)
 ggsave(paste0(opt$out_dir, "/actual_productivity_qqplot.png"),
        actual_productivity_qqplot)
-ggsave(paste0(opt$out_dir, "/summary_table_1.png"),
-       summary_table_1)
+write_csv(summary_table_1, paste0(opt$out_dir, "/summary_table_1.csv"))

@@ -6,6 +6,7 @@
 Usage: src/R/save_data.R <file_path> <out_dir>
 " -> doc
 
+source("/load_data.R")
 suppressPackageStartupMessages({
   library(tidyverse)
   library(broom)
@@ -14,8 +15,6 @@ suppressPackageStartupMessages({
   library(glmnet)
   library(docopt)
 })
-
-options(repr.plot.width = 10, repr.plot.height = 14)
 
 opt <- docopt(doc)
 
