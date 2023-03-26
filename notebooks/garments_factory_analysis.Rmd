@@ -268,14 +268,14 @@ Another factor that may have led to our results being non-significant relative t
 These issues regarding normality and heteroskedasticity in our data and models may have resulted in inaccurate standard errors and thus induced lower precision from coefficient estimates, as well as inaccurate p-values and F-statistics. These limitations may have affected the statistical significance of our results.
 
 
-### Impact 
+## Impact 
 
 The common variables included from both forward selection and LASSO were `targeted_productivity`, `smv`, `incentive`, `idle_men`, and `no_of_style_change`. The models suggest that the daily set productivity, allocated time for a task, financial incentive, number of idle workers, and number of style changes have the strongest correlation with actual productivity. These findings can drive business decisions of those in management and leadership positions as they could potentially manipulate each variable to drive the highest amount of productivity, and thus, profit. For example, a higher monetary incentive per item will motivate workers to be more efficient, and can have higher payoffs overall, though one should be cautious of unsatisfactory work.
 
 The study “Enhancing Efficiency and Productivity of Garment Industry by Using Different Techniques” relays methods of increasing productivity by eliminating factors such as idle time, related to the `idle_men` variable in our model. These methods include time study, implementing a visual management system, and standardized work procedures which increased efficiency by 8.07% [@rajput2018enhancing]. Focussing on decreasing the number of style changes through process management can also increase productivity where less set-up and transition times between patterns reduce time wasted. “The effect of lean on occupational health and safety and productivity in the garment industry” outlines lean methodology where waste is minimized by reducing variability on all fronts of production [@hamja2019effect]. While there is evidence of positive effects on productivity by using lean, the literature also points to a potential negative impact on workers’ health– which morally outweighs monetary profit [@hamja2019effect].
 
 
-### Future Questions 
+## Future Questions 
 
 This study prompts further questions about the garment industry. 
 - How can we improve these variables to have a more efficient productivity? 
