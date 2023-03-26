@@ -36,6 +36,26 @@ To answer this question, we performed data analysis to search for the most optim
    - USERNAME = rstudio
    - PASSWORD = x
    ```
+
+### Using Makefile
+1. Install the listed [dependencies](#dependencies) below
+2. Clone the repository
+   ```
+   git clone https://github.com/jw327/dsci-310-group-01.git
+   ```
+3. Use the terminal/command line to navigate to the root directory of the project
+   ```
+   cd dsci-310-group-01
+   ```
+4. Run the following in the terminal/command line to produce the html report:
+   ```
+   make report
+   ```
+5. To reset the repo to a clean state use:
+   ```
+   make clean
+   ```
+
 ## Viewing the Analysis
 The corresponding analysis files are found [here](https://github.com/jw327/dsci-310-group-01/tree/main/notebooks).
 
@@ -51,6 +71,8 @@ Using R version 4.2.2
 - `testthat:3.1.6`
 - `bookdown:0.33`
 - `docopt:0.7.1`
+- `here:1.0.1`
+- `bookdown:0.1.0`
 
 ## License 
 Licensed under the MIT License and
