@@ -1,22 +1,16 @@
-#' From a given data frame drops selected columns and creates a new data frame
-#'
-#' @param data A data frame or tibble
-#' @param columns Names of columns to be dropped from the data frame
-#'
-#' @return A new data frame from the old data frame with selected columns dropped 
-#'
-#' @export
-#' 
-#' @examples
-#' clean_data(garments_data, c("data","team"))
-#' 
+#author: Anirudh Duggal, Justin Wong
+#date: 2022-03-25
 
-" The clean_data function makes sure that the dataset being used in all following
-processes and evaluation methods is cleaned and contains only those variables of 
-interest
+# This script makes sure that the dataset being used in all following processes and evaluation methods 
+# is cleaned and contains only those variables of interest
 
-Usage: src/R/clean_data.R <df> <cols> <out_dir>
-" -> doc
+doc<-"
+Usage:
+  src/R/02-clean_data.R --input=<input> --out_dir=<output_dir>
+    Options:
+    --input=<input>		
+      --out_dir=<output_dir>		
+        "
 
 suppressPackageStartupMessages({
   library(tidyverse)
@@ -24,12 +18,26 @@ suppressPackageStartupMessages({
   library(GGally)
   library(leaps)
   library(glmnet)
+  library(here)
   library(docopt)
 })
 
-source("/clean_data.R")
-opt <- docopt(doc)
+source(here("src/R/clean_data.R"))
 
-clean_data = clean_data(opt$df, opt$cols)
-  
-write_csv(clean_data, paste0(opt$out_dir, "/clean_data.csv"))
+opt <- docopt(doc)
+main <- function(input, out_dir) {
+  data_df <- read_csv(opt$input)
+  data.filtered <-
+    clean_data(data_df, c("date", "team")) %>%
+    mutate(wip = ifelse((is.na(wip)), 0, wip)) %>%
+    mutate(department = ifelse((department == "finishing "), "finishing", department)) %>%
+    mutate(department = ifelse((department == "sweing"), "sewing", department)) %>%
+    mutate(department = as.factor(department)) %>%
+    mutate(day = if_else(day %in% c("Monday", "Tuesday", "Wednesday", "Thursday"), "Weekday", "Weekend")) %>%
+    mutate(half = if_else(quarter %in% c("Quarter1", "Quarter2"), "Half1", "Half2"))  %>%
+    clean_data(., "quarter") %>%
+    mutate(day = as.factor(day)) %>%
+    mutate(half = as.factor(half))
+  write_csv(data.filtered, paste0(opt$out_dir, "/filtered_data.csv"))
+}
+main(opt[["--input"]], opt[["--out_dir"]])

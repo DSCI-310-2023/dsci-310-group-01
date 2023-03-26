@@ -1,20 +1,22 @@
-#author: Longfei Guan
+#author: Longfei Guan, Justin Wong
 #date: 2022-03-23
 
-"This scripts runs exploratory data analysis on the given data and outputs graphs and summary table.
-The the correlation values between the variables is saved as a png file named 'pair_plots.png'.
-The boxplot of the actual productivity by day of the week is saved as a png file named 'day_boxplot.png'.
-The boxplot of the actual productivity by half is saved as a png file named 'half_boxplot.png'.
-The boxplot of the actual productivity by department is saved as a png file named 'department_boxplot.png'.
-The distribution of actual productivity is saved as a png file named 'actual_productivity_distribution.png'.
-The QQ plot of actual productivity is saved as a png file named 'actual_productivity_qqplot.png'.
-The summary table of actual productivity for different halves and departments is saved as a csv file named 'summary_table_1.csv'.
+# This scripts runs exploratory data analysis on the given data and outputs graphs and summary table.
+# The the correlation values between the variables is saved as a png file named 'pair_plots.png'.
+# The boxplot of the actual productivity by day of the week is saved as a png file named 'day_boxplot.png'.
+# The boxplot of the actual productivity by half is saved as a png file named 'half_boxplot.png'.
+# The boxplot of the actual productivity by department is saved as a png file named 'department_boxplot.png'.
+# The distribution of actual productivity is saved as a png file named 'actual_productivity_distribution.png'.
+# The QQ plot of actual productivity is saved as a png file named 'actual_productivity_qqplot.png'.
+# The summary table of actual productivity for different halves and departments is saved as a csv file named 'summary_table_1.csv'.
 
-Usage: src/R/EDA_figures.R <data> <out_dir>
-" -> doc
-
-source("/clean_data.R")
-source("/create_boxplot.R")
+doc<-"
+Usage:
+  src/R/03-EDA_figures --input=<input> --out_dir=<output_dir>
+    Options:
+    --input=<input>		
+      --out_dir=<output_dir>		
+        "
 
 suppressPackageStartupMessages({
   library(tidyverse)
@@ -22,12 +24,16 @@ suppressPackageStartupMessages({
   library(GGally)
   library(leaps)
   library(glmnet)
+  library(here)
   library(docopt)
 })
 
+source(here("src/R/clean_data.R"))
+source(here("src/R/create_boxplot.R"))
+
 opt <- docopt(doc)
 
-data.filtered <- doc$data
+data.filtered <-read_csv(opt$input)
 
 options(repr.plot.width = 15, repr.plot.height = 10)
 
@@ -71,9 +77,8 @@ actual_productivity_distribution <- data.filtered %>%
     plot.title = element_text(face = "bold"),
     axis.title = element_text(face = "bold") )
 
-qqnorm(data.filtered$actual_productivity)
-qqline(data.filtered$actual_productivity)
-actual_productivity_qqplot <- recordPlot()
+actual_productivity_qqplot <- ggplot(data.filtered, aes(sample = actual_productivity)) + stat_qq() + stat_qq_line()+
+  labs(title ="Normal Q-Q Plot", x ="Theoretical Quantities", y = "Sample Quantiles")
 
 summary_table_1 <- data.filtered %>%
   group_by(half, department) %>%

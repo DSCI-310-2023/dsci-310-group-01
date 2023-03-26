@@ -1,0 +1,2 @@
+summary(model_selected_1)$adj.r.squared
+0.2326609645563743
