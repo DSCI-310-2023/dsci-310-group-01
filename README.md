@@ -23,14 +23,21 @@ To answer this question, we performed data analysis to search for the most optim
    ```
    cd dsci-310-group-01
    ```
-4. Run the following to set up the environment:
+4. Run the the following to obtain the docker image:
    ```
-   docker run -p 8888:8888 --rm -v /$(pwd):/home/jovyan/work/project jwong086/dsci-310-group-01
+   docker build --tag dsci-310-group-01-env . 
    ```
-
-
+5. Run the following to set up the environment:
+   ```
+   docker run --rm -p 8787:8787 -e PASSWORD=x  -v /$(pwd):/home/rstudio/project dsci-310-group-01-env
+   ```
+6. Use the following credentials to sign in:
+   ```
+   - USERNAME = rstudio
+   - PASSWORD = x
+   ```
 ## Viewing the Analysis
-The corresponding analysis file is found [here](https://github.com/jw327/dsci-310-group-01/blob/main/notebooks/garments_factory_analysis.ipynb).
+The corresponding analysis files are found [here](https://github.com/jw327/dsci-310-group-01/tree/main/notebooks).
 
 ## Dependencies
 Using R version 4.2.2
@@ -42,6 +49,8 @@ Using R version 4.2.2
 - `leaps:3.1`
 - `glmnet:4.1-6`
 - `testthat:3.1.6`
+- `bookdown:0.33`
+- `docopt:0.7.1`
 
 ## License 
 Licensed under the MIT License and

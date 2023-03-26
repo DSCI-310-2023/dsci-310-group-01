@@ -4,6 +4,7 @@ author: "By Justin Wong, Longfei Guan, Anirudh Duggal"
 output:   
     bookdown::html_document2:
       default
+bibliography: references.bib
 ---
 
 Adapted with permission from STAT 301 Project by: Justin Wong, Kevin Yu, Zhuoran (Serena) Feng, Fiona Chang
@@ -12,12 +13,12 @@ Adapted with permission from STAT 301 Project by: Justin Wong, Kevin Yu, Zhuoran
 In this project, we perform a data analysis to determine the factors that impact the predict the productivity of a garment factory. Using forward selection and LASSO, we compare different models and determine which factors are the best in explaining relationships between the factors and the actual productivity of the garment factory. Furthermore, we discuss the implications of our results, the limitations of the project, and propose future  questions that can be asked based on our project.
 
 # Introduction
-The trillion-dollar garment industry is largely fueled by the production and performance of employees that work in manufacturing companies as a labor-intensive, low-skilled industry (Hamja et al., 2019). As the industry is driven by ever-changing consumer demands and fashion trends, the need for manual processes is inevitable. Through statistical inference, we seek to dig deeper into the relationship between important attributes of the garment manufacturing process and its employees’ productivity in the following question: **What factors affect the productivity of a garment factory?** 
+The trillion-dollar garment industry is largely fueled by the production and performance of employees that work in manufacturing companies as a labor-intensive, low-skilled industry [@hamja2019effect]. As the industry is driven by ever-changing consumer demands and fashion trends, the need for manual processes is inevitable. Through statistical inference, we seek to dig deeper into the relationship between important attributes of the garment manufacturing process and its employees’ productivity in the following question: **What factors affect the productivity of a garment factory?** 
 
-The studies: “Enhancing Efficiency and Productivity of Garment Industry by Using Different Techniques” (Rajput et al., 2018) and “The Effect of Lean on Occupational Health and Safety and Productivity in the Garment Industry” (Hamja et al., 2019) will be utilized to help frame our exploration into this data set and provide useful context of the garment industry.
+The studies: “Enhancing Efficiency and Productivity of Garment Industry by Using Different Techniques” [@rajput2018enhancing] and “The Effect of Lean on Occupational Health and Safety and Productivity in the Garment Industry” [@hamja2019effect] will be utilized to help frame our exploration into this data set and provide useful context of the garment industry.
 
 ## Attribute Information 
-The data set we will use, called Productivity Prediction of Garment Employees, is sourced from Kaggle.com and outlines following variables that will guide us in answering our question:
+The data set we will use, called Productivity Prediction of Garment Employees, is sourced from Kaggle.com [@dataset] and outlines following variables that will guide us in answering our question:
 - `date`: Date in MM-DD-YYYY
 - `quarter`: A portion of a month, where each month was divided into 4 quarters
 - `department`: Associated department
@@ -53,6 +54,9 @@ source("../src/R/load_data.R")
 source("../src/R/clean_data.R")
 source("../src/R/create_boxplot.R")
 source("../src/R/train_test_split.R")
+
+knitr::opts_chunk$set(echo = FALSE)
+
 ```
 
 ```{r}
@@ -187,7 +191,7 @@ This table provides relevant summaries of our data, split into different quarter
 - The standard deviation for the finishing department is slightly larger than the sewing department.
 
 ## Methods: Plan 
-The data set used is trustworthy and reliable since multiple published academic papers used this data set (Imran et al (2019), Rahim et al (2021)). 
+The data set used is trustworthy and reliable since multiple published academic papers used this data set [@al2019deep], [@imran2021mining]). 
 
 Using the data set, we plan to analyze what factors are the most important in productivity. Linear regression will be used to determine the best inference model for the actual productivity of the factory. Using forward selection and LASSO, we plan to compare different models and determine which factors are the best in explaining relationships between the factors and the actual productivity of the garment factory. Additionally, we plan to test our optimal inference model’s performance by splitting the data into training and testing and comparing the corresponding adjusted $R^2$ values with the full model.
 
@@ -426,7 +430,7 @@ These issues regarding normality and heteroskedasticity in our data and models m
 
 The common variables included from both forward selection and LASSO were `targeted_productivity`, `smv`, `incentive`, `idle_men`, and `no_of_style_change`. The models suggest that the daily set productivity, allocated time for a task, financial incentive, number of idle workers, and number of style changes have the strongest correlation with actual productivity. These findings can drive business decisions of those in management and leadership positions as they could potentially manipulate each variable to drive the highest amount of productivity, and thus, profit. For example, a higher monetary incentive per item will motivate workers to be more efficient, and can have higher payoffs overall, though one should be cautious of unsatisfactory work.
 
-The study “Enhancing Efficiency and Productivity of Garment Industry by Using Different Techniques” relays methods of increasing productivity by eliminating factors such as idle time, related to the `idle_men` variable in our model. These methods include time study, implementing a visual management system, and standardized work procedures which increased efficiency by 8.07% (Rajput et al., 2018). Focussing on decreasing the number of style changes through process management can also increase productivity where less set-up and transition times between patterns reduce time wasted. “The effect of lean on occupational health and safety and productivity in the garment industry” outlines lean methodology where waste is minimized by reducing variability on all fronts of production (Hamja et al., 2019). While there is evidence of positive effects on productivity by using lean, the literature also points to a potential negative impact on workers’ health– which morally outweighs monetary profit (Hamja et al., 2019).
+The study “Enhancing Efficiency and Productivity of Garment Industry by Using Different Techniques” relays methods of increasing productivity by eliminating factors such as idle time, related to the `idle_men` variable in our model. These methods include time study, implementing a visual management system, and standardized work procedures which increased efficiency by 8.07% [@rajput2018enhancing]. Focussing on decreasing the number of style changes through process management can also increase productivity where less set-up and transition times between patterns reduce time wasted. “The effect of lean on occupational health and safety and productivity in the garment industry” outlines lean methodology where waste is minimized by reducing variability on all fronts of production [@hamja2019effect]. While there is evidence of positive effects on productivity by using lean, the literature also points to a potential negative impact on workers’ health– which morally outweighs monetary profit [@hamja2019effect].
 
 
 ### Future Questions 
@@ -437,15 +441,3 @@ This study prompts further questions about the garment industry.
 - What other variables outside of this dataset, particularly involving technological innovation, affect productivity? - What is the environmental impact of increasing productivity?
 
 # References 
-
-Siri, S. (2021, April 6). Productivity prediction of garment employees. Kaggle. Retrieved November 4, 2022, from https://www.kaggle.com/datasets/ishadss/productivity-prediction-of-garment-employees 
-
-Hamja, A., Maalouf, M., &amp; Hasle, P. (2019). The effect of lean on occupational health and safety and productivity in the garment industry – a literature review. Production &amp; Manufacturing Research, 7(1), 316–334. https://doi.org/10.1080/21693277.2019.1620652
-
-Imran, A. A., Amin, M. N., Islam Rifat, M. R., & Mehreen, S. (2019). Deep Neural Network Approach for Predicting the Productivity of Garment Employees. 2019 6th International Conference on Control, Decision and Information Technologies (CoDIT). https://doi.org/10.1109/CoDIT.2019.8820486
-
-Rahim, M. S., Imran, A. A., & Ahmed, T. (2021). Mining the Productivity Data of Garment Industry. International Journal of Business Intelligence and Data Mining, 1(1), 1. https://doi.org/10.1504/IJBIDM.2021.118183
-
-Rajput, D., Kakde, M., Chandurkar, P., & Raichurkar, P. P. (2018). Enhancing efficiency and productivity of garment industry by using different techniques. International Journal on Textile Engineering and Processes, 4(1), 5-8.
-
-
