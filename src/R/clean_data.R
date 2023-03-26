@@ -9,19 +9,34 @@
 #' 
 #' @examples
 #' clean_data(garments_data, c("data","team"))
-clean_data <- function(data, columns) {
-  if (!is.data.frame(data)) {
-    stop("data must be a data frame. Please try again.")
+#' 
+
+" The clean_data function makes sure that the dataset being used in all following
+processes and evaluation methods is cleaned and contains only those variables of 
+interest
+
+Usage: src/R/clean_data.R <df> <cols> <out_dir>
+" -> doc
+
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(broom)
+  library(GGally)
+  library(leaps)
+  library(glmnet)
+  library(docopt)
+})
+
+source("/01-save_data.R")
+opt <- docopt(doc)
+
+clean_data = opt$df
+col_names <- names(clean_data)
+
+for (c in opt$cols) {
+  if ({c} %in% col_names) {
+    clean_data = clean_data |> dplyr::select(-{c})
   }
-  
-  col_names <- names(data)
-  
-  for (c in columns) {
-    if ({c} %in% col_names) {
-      data <- data |> dplyr::select(-{c})
-    } else {
-      stop("column names incorrect. Please try again")
-    }
-  }
-  return(data)
 }
+  
+write_csv(clean_data, paste0(opt$out_dir, "/clean_data.csv"))
