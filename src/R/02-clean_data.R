@@ -1,7 +1,8 @@
 #author: Anirudh Duggal, Justin Wong
 #date: 2022-03-25
 
-# This script makes sure that the dataset being used in all following processes and evaluation methods is cleaned and contains only those variables of interest
+# This script makes sure that the dataset being used in all following processes and evaluation methods 
+# is cleaned and contains only those variables of interest
 
 doc<-"
 Usage:

@@ -1,7 +1,7 @@
 #author: Longfei Guan, Justin Wong
 #date: 2022-03-24
 
-#' This script reads a dataset from the given URL and saves it as a csv file named 'garments_worker_productivity.csv'
+#This script reads a dataset from the given URL and saves it as a csv file named 'garments_worker_productivity.csv'
 
 doc<-"
 Usage:

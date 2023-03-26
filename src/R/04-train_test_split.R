@@ -1,27 +1,17 @@
-#' Splitting test data into testing and training data
-#'
-#' Creates two data frames, one for testing and one for training, 
-#' from the parent data frame
-#'
-#' @param data_frame A data frame or data frame extension (e.g. a tibble).
-#' @param train_percent The percent of the parent dataframe to be train-test split 
-#' @param col_name The column name to group by in the testing dataframe
-#'
-#' @return A list with two data frames
-#'   A user-input percent of the parent dataframe training dataframe split of the parent dataframe 
-#'   A user-input percent's compliment of the parent dataframe testing dataframe split of the parent dataframe 
-#' 
-#' @export
-#'
-#' @examples
-#' train_test_split(garment_Data, 0.75, "ID")
-"This file ensures we get a user specfied percent break within the dataframe to
-allow us to fetch a testing and training data frame that will be passed forward
-into analytical methods such as lasso and forward regression models
+#author: Anirudh Duggal, Justin Wong
+#date: 2022-03-25
 
-Usage: src/R/train_test_split.R <percent> <col_name> <out_dir>
-" -> doc
-source("./train_test_split.R")
+# This file ensures we get a user specfied percent break within the dataframe to 
+# allow us to fetch a testing and training data frame that will be passed forward
+# into analytical methods such as lasso and forward regression models
+
+doc<-"
+Usage:
+  src/R/04-train_test_split.R --input=<input> --out_dir=<output_dir>
+    Options:
+    --input=<input>		
+      --out_dir=<output_dir>		
+        "
 
 suppressPackageStartupMessages({
   library(tidyverse)
@@ -29,12 +19,23 @@ suppressPackageStartupMessages({
   library(GGally)
   library(leaps)
   library(glmnet)
+  library(here)
   library(docopt)
 })
 
+source(here("src/R/clean_data.R"))
+source(here("src/R/train_test_split.R"))
+
 opt <- docopt(doc)
 
-c(train_data, test_data) = train_test_split(opt$df, opt$percent, opt$col_name)
+data.filtered <- read_csv(opt$input)
+data.filtered$ID <- 1:nrow(data.filtered)
+new_data<-train_test_split(data.filtered, 0.75, "ID")
+training_data<-as.data.frame(new_data[1])
+testing_data<-as.data.frame(new_data[2])
 
-write_csv(train_data, paste0(opt$out_dir, "/train_data.csv"))
-write_csv(test_data, paste0(opt$out_dir, "/test_data.csv"))
+training_data<-clean_data(training_data, "ID")
+testing_data<-clean_data(testing_data, "ID")
+
+write_csv(training_data, paste0(opt$out_dir, "/train_data.csv"))
+write_csv(testing_data, paste0(opt$out_dir, "/test_data.csv"))

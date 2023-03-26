@@ -23,26 +23,26 @@ data/cleaned_data.csv : data/garments_worker_productivity.csv src/R/02-clean_dat
 
 # EDA 
 results/pair_plots.png : data/cleaned_data.csv src/R/03-EDA_figures.R
-		Rscript src/R/03-EDA_figures.R data/cleaned_data.csv results
+		Rscript src/R/03-EDA_figures.R --input="data/filtered_data.csv" --out_dir="results"
 
 results/day_boxplot.png : data/cleaned_data.csv src/R/03-EDA_figures.R
-		Rscript src/R/03-EDA_figures.R data/cleaned_data.csv results
+		Rscript src/R/03-EDA_figures.R --input="data/filtered_data.csv" --out_dir="results"
 
 results/department_boxplot.png : data/cleaned_data.csv src/R/03-EDA_figures.R
-		Rscript src/R/03-EDA_figures.R data/cleaned_data.csv results
+		Rscript src/R/03-EDA_figures.R --input="data/filtered_data.csv" --out_dir="results"
 
 results/actual_productivity_distribution.png : data/cleaned_data.csv src/R/03-EDA_figures.R
-		Rscript src/R/03-EDA_figures.R data/cleaned_data.csv results
+		Rscript src/R/03-EDA_figures.R --input="data/filtered_data.csv" --out_dir="results"
 
 results/actual_productivity_qqplot.png : data/cleaned_data.csv src/R/03-EDA_figures.R
-		Rscript src/R/03-EDA_figures.R data/cleaned_data.csv results
+		Rscript src/R/03-EDA_figures.R --input="data/filtered_data.csv" --out_dir="results"
 
 results/summary_table_1.csv : data/cleaned_data.csv src/R/03-EDA_figures.R
-		Rscript src/R/03-EDA_figures.R data/cleaned_data.csv results
+		Rscript src/R/03-EDA_figures.R --input="data/filtered_data.csv" --out_dir="results"
 
 # data pre-processing: split into training and testing sets
 data/train_data.csv : data/cleaned_data.csv src/R/04-train_test_split.R
-		Rscript src/R/04-train_test_split.R data/cleaned_data.csv data
+		Rscript src/R/04-train_test_split.R --input="data/filtered_data.csv" --out_dir="results"
 
 data/test_data.csv : data/cleaned_data.csv src/R/04-train_test_split.R
-		Rscript src/R/04-train_test_split.R data/cleaned_data.csv data
+		Rscript src/R/04-train_test_split.R --input="data/filtered_data.csv" --out_dir="results"
