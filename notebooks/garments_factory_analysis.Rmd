@@ -50,53 +50,26 @@ library(GGally)
 library(leaps)
 library(glmnet)
     })
-source("../src/R/load_data.R")
-source("../src/R/clean_data.R")
-source("../src/R/create_boxplot.R")
-source("../src/R/train_test_split.R")
-
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
 
 ```
 
-```{r}
-# Download file from online source
-data<-load_data("https://7e6cd356-86ad-4874-abc7-3a69bbbc39e6.filesusr.com/ugd/c5a545_c1b17c070c984dfcb14cf1c3bb0b6e67.csv?dn=garments_worker_productivity.csv")
-cat("Table 1: Initial Dataset")
-head(data,3)
+```{r download-file}
+data<-read.csv("../data/garments_worker_productivity.csv")
+knitr::kable(head(data,3), caption = "Initial Dataset")
 ```
 
-```{r}
-# Cleaning the dataset
-data.filtered <- 
-    clean_data(data, c("date", "team")) %>% # removing variables not used (date and team)
-    mutate(wip = ifelse((is.na(wip)), 0, wip)) %>% 
-    mutate(department = ifelse((department == "finishing "), "finishing", department)) %>% # fixing typos for "finishing"
-    mutate(department = ifelse((department == "sweing"), "sewing", department)) %>% # fixing typos for "sewing"
-    mutate(department = as.factor(department)) %>% # change department variable to a factor
-    mutate(day = if_else(day %in% c("Monday", "Tuesday", "Wednesday", "Thursday"), "Weekday", "Weekend")) %>% # editing day variable
-    mutate(half = if_else(quarter %in% c("Quarter1", "Quarter2"), "Half1", "Half2"))  %>%  # creating quarter variable using quarter variable
-    clean_data(., "quarter") %>% # removing quarter variable
-    mutate(day = as.factor(day)) %>% # change day variable to a factor
-    mutate(half = as.factor(half)) # change half variable to a factor
-cat("Table 2: Modified Dataset")
-head(data.filtered,3)
+```{r clean-data}
+data.filtered<-read.csv("../data/filtered_data.csv")
+knitr::kable(head(data.filtered,3), caption = "Modified Dataset")
 ```
 
 Both the categorical variables `day` and `quarter` were edited becasue they have more than two levels, which leads to difficulties in conducting forward selection. Based on this, `day` was changed into two levels: Weekday and Weekend. Similarilily, `quarter` was used to create the variable `half` with two levels.
 
-```{r}
-# Complete ggpairs for all data
-options(repr.plot.width = 15, repr.plot.height = 10) 
-
-pair_plots <-ggpairs(data.filtered) +
-  theme(
-    text = element_text(size = 15),
-    plot.title = element_text(face = "bold"),
-    axis.title = element_text(face = "bold")
-  )
-cat("Figure 1: ggpairs Plot")
-suppressWarnings(suppressMessages(print(pair_plots)))
+```{r ggpairs-plot, fig.cap="ggpairs Plot", out.width="85%", echo=FALSE}
+knitr::include_graphics("../results/pair_plots.png")
 ```
 
 From this plot, we can analyze the correlation values between the variables that we are using in our analysis. Based on the correlation values, there appears to be correlation between input variables, which will be addressed later in the analysis.
@@ -104,85 +77,46 @@ Variables with relatively high correlations include `no_of_workers` and `smv`(0.
 
 The high correlation indicates that the dataset has an issue of multicollinearity. To address this, the variable with the (`no_of_workers`) will be removed from our analysis.
 
-```{r}
-# Remove no_of_workers from data
-data.filtered <- clean_data(data.filtered, "no_of_workers")
+```{r day-boxplot, fig.cap="Actual Productivity by Day of the Week Boxplot", out.width="60%", echo=FALSE}
+knitr::include_graphics("../results/day_boxplot.png")
 ```
 
-```{r}
-options(repr.plot.width = 10, repr.plot.height = 4)
+```{r half-boxplot, fig.cap="Actual Productivity by Half Boxplot", out.width="60%", echo=FALSE}
+knitr::include_graphics("../results/half_boxplot.png")
+```
 
-# Boxplot comparing the actual productivity of different day to analyze mean + variance
-day_boxplot <- create_boxplot(data.filtered, data.filtered$day, 
-                              data.filtered$actual_productivity, 
-                              "Actual Productivity by Day of the Week", 
-                              "Weekend/Weekday", "Actual Productivity")
-cat("Figure 2: Actual Productivity by Day of the Week Boxplot")
-day_boxplot
-
-
-# Boxplot to compare the actual productivity of different halves 
-half_boxplot <- create_boxplot(data.filtered, data.filtered$half, 
-                               data.filtered$actual_productivity, 
-                              "Actual Productivity by Half", 
-                              "Half", "Actual Productivity")
-half_boxplot
-cat("Figure 3: Actual Productivity by Half Boxplot")
-
-# Boxplot to compare the actual productivity of different departments.
-department_boxplot <- create_boxplot(data.filtered, data.filtered$department, 
-                                     data.filtered$actual_productivity, 
-                                  "Actual Productivity of Departments", 
-                                  "Department", "Actual Productivity")
-department_boxplot
-cat("Figure 4: Actual Productivity of Departments Boxplot")
+```{r department-boxplot, fig.cap="Actual Productivity of Departments Boxplot", out.width="60%", echo=FALSE}
+knitr::include_graphics("../results/department_boxplot.png")
 ```
 
 The above boxplots show the medians and variances of the discrete factors of interest. Since the above plots show that there are differences in the medians and variances of the factors of interest, it is justified to keep these factors in our analysis for future investigation.
 
-
-```{r}
-options(repr.plot.width = 10, repr.plot.height = 5)
-
-# Histogram for Actual Productivity
-actual_productivity_distribution <- data.filtered %>%
-                                      ggplot(aes(x = actual_productivity)) +
-                                      geom_histogram(bins = 20) +
-                                    ggtitle("Distribution of Actual Productivity")+
-                                      labs(x = "Actual Productivity") +
-                                      labs(y = "Frequency")+ theme(
-                                        text = element_text(size = 20),
-                                        plot.title = element_text(face = "bold"),
-                                        axis.title = element_text(face = "bold") )
-cat("Figure 5: Distribution of Actual Productivity")
-actual_productivity_distribution
+```{r actual-productivity-hist, fig.cap="Distribution of Actual Productivity", out.width="60%", echo=FALSE}
+knitr::include_graphics("../results/actual_productivity_distribution.png")
 ```
 
 Since, the distribution of the actual productivity doesn't seem to have a normal distribution and is slightly left-skewed, an assumption of normality is likely needed in our analysis.
 
-```{r}
-# Checking the normalitiy of the actual_productivity (response variable)
-cat("Figure 5: Q-Q Plot of Actual Productivity")
-qqnorm(data.filtered$actual_productivity)
-qqline(data.filtered$actual_productivity)
+```{r QQ-plot,  fig.cap="Q-Q Plot of Actual Productivity", out.width="60%", echo=FALSE}
+knitr::include_graphics("../results/actual_productivity_qqplot.png")
 ```
 
 The above Q-Q plot was used to determine whether a normality assumption on our response variable is valid, since it is an assumption required for tests used later on. There appears to be tails on both ends, which suggests a left-skewness of the data. Unfortunately, while we have tried different transformations of the data, it did not improve the skewness of this Q-Q plot. So based on what we have learned in this class, we will have to assume normality of the data even though it is a major stretch.
 
-```{r}
+```{r summary-table-eda}
 # summary table of actual_productivity for different halves and departments
-summary_table_1 <- data.filtered %>%
-                   group_by(half, department) %>%
-                   summarise(count = n(),
-                             mean = mean(actual_productivity),
-                             median = median(actual_productivity), 
-                             min = min(actual_productivity),
-                             max = max(actual_productivity),
-                             sd = sd(actual_productivity), 
-                            .groups = 'keep'
-                            )
-cat("Table 3: Summary of Actual Productivity for Halves and Departments")
-summary_table_1
+# summary_table_1 <- data.filtered %>%
+#                    group_by(half, department) %>%
+#                    summarise(count = n(),
+#                              mean = mean(actual_productivity),
+#                              median = median(actual_productivity), 
+#                              min = min(actual_productivity),
+#                              max = max(actual_productivity),
+#                              sd = sd(actual_productivity), 
+#                             .groups = 'keep'
+#                             )
+# cat("Table 3: Summary of Actual Productivity for Halves and Departments")
+# summary_table_1
 ```
 
 This table provides relevant summaries of our data, split into different quarters and departments. Overall, the data seems to be relatively consistent, with a few things to note:
@@ -203,48 +137,48 @@ The results from this report could provide insights to companies in the garment 
 
 ### Generating the Model with Forward Selection 
 
-```{r}
+```{r train-test-split}
 # Split the data into two datasets: training dataset (75%) and testing dataset (25%)
-set.seed(20221127)
-
-data.filtered$ID <- 1:nrow(data.filtered)
-new_data<-train_test_split(data.filtered, 0.75, "ID")
-training_data<-as.data.frame(new_data[1])
-testing_data<-as.data.frame(new_data[2])
-
-#Remove ID varaible
-training_data<-clean_data(training_data, "ID")
-testing_data<-clean_data(testing_data, "ID")
-
-cat("Table 4: Training Data")
-head(training_data, 3)
-
-cat("Table 5: Testing Data")
-head(testing_data, 3)
+# set.seed(20221127)
+# 
+# data.filtered$ID <- 1:nrow(data.filtered)
+# new_data<-train_test_split(data.filtered, 0.75, "ID")
+# training_data<-as.data.frame(new_data[1])
+# testing_data<-as.data.frame(new_data[2])
+# 
+# #Remove ID varaible
+# training_data<-clean_data(training_data, "ID")
+# testing_data<-clean_data(testing_data, "ID")
+# 
+# cat("Table 4: Training Data")
+# head(training_data, 3)
+# 
+# cat("Table 5: Testing Data")
+# head(testing_data, 3)
 ```
 
-```{r}
+```{r forward-selection}
 # Use forward selection to select models with different number of input variables
-model_forward_sel <- regsubsets(
-  x = actual_productivity ~ .,
-  nvmax = 12,
-  data = training_data,
-  method = "forward")
-
-model_forward_summary <- summary(model_forward_sel)
-model_forward_summary
+# model_forward_sel <- regsubsets(
+#   x = actual_productivity ~ .,
+#   nvmax = 12,
+#   data = training_data,
+#   method = "forward")
+# 
+# model_forward_summary <- summary(model_forward_sel)
+# model_forward_summary
 ```
 
-```{r}
+```{r foward-selection evalutation}
 # store and examine different evaluation metrics contained in model_forward_summary
-model_forward_summary_df <- tibble(
-  n_input_variables = 1:11,
-  RSQ = model_forward_summary$rsq,
-  RSS = model_forward_summary$rss,
-  ADJ.R2 = model_forward_summary$adjr2
-)
-cat("Table 6: Evaluation Metrics for Forward Selection")
-model_forward_summary_df
+# model_forward_summary_df <- tibble(
+#   n_input_variables = 1:11,
+#   RSQ = model_forward_summary$rsq,
+#   RSS = model_forward_summary$rss,
+#   ADJ.R2 = model_forward_summary$adjr2
+# )
+# cat("Table 6: Evaluation Metrics for Forward Selection")
+# model_forward_summary_df
 
 #format(model_forward_summary$adjr2, scientific = TRUE)
 ```
@@ -255,154 +189,154 @@ As shown by the table above, the model with 6 input variables has the highest ad
 
 The variables selected in the model with 6 input variables  were: `targeted_productivity`, `smv`, `wip`, `incentive`, `idle_men`, and `no_of_style_change`. 
 
-```{r}
+```{r summary-forward-selection}
 # Find Adj R^2 for chosen optimal model
-cat("Table 7: Summary Table for Selected Model")
-model_selected_1 <- lm(actual_productivity ~ targeted_productivity +
-                    smv + wip + incentive + idle_men + no_of_style_change, 
-                    data = training_data)
-model_selected_summary_1 <- tidy(model_selected_1)
-model_selected_summary_1
-
-
-adj_r_squared_1 <- summary(model_selected_1)$adj.r.squared 
-cat("Adjusted R^2 for Selected Model:")
-adj_r_squared_1
+# cat("Table 7: Summary Table for Selected Model")
+# model_selected_1 <- lm(actual_productivity ~ targeted_productivity +
+#                     smv + wip + incentive + idle_men + no_of_style_change, 
+#                     data = training_data)
+# model_selected_summary_1 <- tidy(model_selected_1)
+# model_selected_summary_1
+# 
+# 
+# adj_r_squared_1 <- summary(model_selected_1)$adj.r.squared 
+# cat("Adjusted R^2 for Selected Model:")
+# adj_r_squared_1
 ```
 
-```{r}
+```{r assumptions-forward-selection}
 # Checking assumptions of selected model
-cat("Figure 7: Residuals and Q-Q Plot of Selected Model")
-plot(model_selected_1, 1:2)
+# cat("Figure 7: Residuals and Q-Q Plot of Selected Model")
+# plot(model_selected_1, 1:2)
 ```
 
 The residual plot and the Q-Q plot suggests some violations of assumptions needed for our analysis. The residual plot shows slight heteroskedasticity within our model, which violates our equal variance assumption, and the q-q plot suggests a violation in our normality assumption. 
 
-```{r}
+```{r adj-R2-full-model}
 # Find Adj R^2 for chosen full model for future comparison with chosen model
-cat("Table 8: Summary Table for Full Model")
-full_model <- lm(actual_productivity ~ ., data = training_data)
-full_model_summary <- tidy(full_model, 0.95, conf.int = TRUE)
-full_model_summary
-
-adj_r_squared_full <- summary(full_model)$adj.r.squared 
-cat("Adjusted R^2 for Full Model:")
-adj_r_squared_full
+# cat("Table 8: Summary Table for Full Model")
+# full_model <- lm(actual_productivity ~ ., data = training_data)
+# full_model_summary <- tidy(full_model, 0.95, conf.int = TRUE)
+# full_model_summary
+# 
+# adj_r_squared_full <- summary(full_model)$adj.r.squared 
+# cat("Adjusted R^2 for Full Model:")
+# adj_r_squared_full
 ```
 
 The adjusted $R^2$ of the selected model (0.2327) is slightly larger than (0.2300) the full model. This further suggests the selected model is not significantly better than the full model. An F-test will be conducted to test this observation.
 
-```{r}
-# F-test for the full model and the selected model 
-cat("Table 9: F-test for Full and Selected Model")
-anova(model_selected_1, full_model)
+```{r f-test-forward-selection}
+# # F-test for the full model and the selected model 
+# cat("Table 9: F-test for Full and Selected Model")
+# anova(model_selected_1, full_model)
 ```
 
 Since the p-value is 0.852, at a 5% significance level, there is not enough evidence to reject the null hypothesis that the selected model performs better than the full model.
 
-```{r}
+```{r forward-selection-test}
 # Testing Selected Model with Testing Data
-cat("Table 9: Summary Table for Selected Model with Testing Data")
-model_1 <- lm(actual_productivity ~ targeted_productivity +
-                    smv + wip + incentive + idle_men + no_of_style_change, ,
-              data = testing_data)
-model_summary <- tidy(model_1)
-model_summary
-
-adj_r_squared <- summary(model_1)$adj.r.squared 
-cat("Adjusted R^2 for Selected Model Using Testing Data:")
-adj_r_squared
+# cat("Table 9: Summary Table for Selected Model with Testing Data")
+# model_1 <- lm(actual_productivity ~ targeted_productivity +
+#                     smv + wip + incentive + idle_men + no_of_style_change, ,
+#               data = testing_data)
+# model_summary <- tidy(model_1)
+# model_summary
+# 
+# adj_r_squared <- summary(model_1)$adj.r.squared 
+# cat("Adjusted R^2 for Selected Model Using Testing Data:")
+# adj_r_squared
 ```
 
 The adjusted $R^2$ suggests that about 17% of the adjusted variation in the response is explained by model. This indicates that the model performs fairly poorly. However, since it was the best model according to our analysis it may suggest that further exploration of this topic is needed. Thus, model selection using LASSO is conducted next.
 
 ### Generating the Model with LASSO 
 
-```{r}
+```{r lasso-split}
 # split datasets into x matrix and y matrix for training and testing
-data_X_train <- training_data %>% select(-"actual_productivity")  %>% data.matrix()
-data_Y_train <- training_data %>% select("actual_productivity")  %>% data.matrix()
-
-data_X_test <- testing_data %>% select(-"actual_productivity")  %>% data.matrix()
-data_Y_test <- testing_data %>% select("actual_productivity")  %>% data.matrix()
+# data_X_train <- training_data %>% select(-"actual_productivity")  %>% data.matrix()
+# data_Y_train <- training_data %>% select("actual_productivity")  %>% data.matrix()
+# 
+# data_X_test <- testing_data %>% select(-"actual_productivity")  %>% data.matrix()
+# data_Y_test <- testing_data %>% select("actual_productivity")  %>% data.matrix()
 ```
 
-```{r}
+```{r to-delete2}
 # find an "optimal" value of lambda using the function cv.glmnet()
-data_cv_lambda_LASSO <- cv.glmnet(
-  x = data_X_train, y = data_Y_train,
-  alpha = 1)
+# data_cv_lambda_LASSO <- cv.glmnet(
+#   x = data_X_train, y = data_Y_train,
+#   alpha = 1)
 ```
 
-```{r}
+```{r lasso-lambda}
 # visualize how the estimated test-MSE changes for different values of lambda
-cat("Figure 8: Lambda Selection by CV with LASSO")
-plot(data_cv_lambda_LASSO, main = "Lambda Selection by CV with LASSO")
-
-# store the lambda value which provide the minimum estimated test-MSE
-lambda_min_MSE_LASSO <- round(data_cv_lambda_LASSO$lambda.min, 4)
+# cat("Figure 8: Lambda Selection by CV with LASSO")
+# plot(data_cv_lambda_LASSO, main = "Lambda Selection by CV with LASSO")
+# 
+# # store the lambda value which provide the minimum estimated test-MSE
+# lambda_min_MSE_LASSO <- round(data_cv_lambda_LASSO$lambda.min, 4)
 ```
 
-```{r}
+```{r to-delete3}
 # build a LASSO model 
-data_LASSO_min <- glmnet(
-  x = data_X_train, y = data_Y_train,
-  alpha = 1,
-  lambda = lambda_min_MSE_LASSO
-)
+# data_LASSO_min <- glmnet(
+#   x = data_X_train, y = data_Y_train,
+#   alpha = 1,
+#   lambda = lambda_min_MSE_LASSO
+# )
 ```
 
-```{r}
+```{r to-delete4}
 # get the selected input variables by the LASSO model
-variables_selected_LASSO <- as_tibble(as.matrix(coef(data_LASSO_min)),rownames='covariate') %>%
-                              filter(covariate != '(Intercept)' & abs(s0) > 10e-6) %>% 
-                              pull(covariate)
+# variables_selected_LASSO <- as_tibble(as.matrix(coef(data_LASSO_min)),rownames='covariate') %>%
+#                               filter(covariate != '(Intercept)' & abs(s0) > 10e-6) %>% 
+#                               pull(covariate)
 #variables_selected_LASSO
 ```
 
 The variables selected in the model by LASSO were:  `targeted_productivity`, `smv`, `incentive`, `idle_men`, and `no_of_style_change`. 
 
-```{r}
-# the model selected by LASSO
-LASSO_model <- lm(actual_productivity ~ targeted_productivity +
-                    smv + incentive + idle_men + no_of_style_change, 
-                  data = training_data)
+```{r to-delete5}
+# # the model selected by LASSO
+# LASSO_model <- lm(actual_productivity ~ targeted_productivity +
+#                     smv + incentive + idle_men + no_of_style_change, 
+#                   data = training_data)
 ```
 
-```{r}
+```{r lasso-assumptions}
 # Checking assumptions of model selected by LASSO
-cat("Figure 9: Residuals and Q-Q Plot of Model Selected by LASSO")
-plot(LASSO_model, 1:2)
+# cat("Figure 9: Residuals and Q-Q Plot of Model Selected by LASSO")
+# plot(LASSO_model, 1:2)
 ```
 
 Much like the model chosen by forward selection, the residual plot for the model selected by LASSO suggests unequal variance, and the Q-Q plot above suggests a normality violation of the variables. Attempts to mitigate this issue have failed, meaning we will have to continue with our analysis with very strong assumptions of our data.
 
-```{r}
+```{r lasso_adj_R2}
 # Adjusted R^2 for the model selected by LASSO
-adj_r_squared_LASSO <- summary(LASSO_model)$adj.r.squared 
-cat("Adjusted R^2 for Selected Model Using LASSO:")
-adj_r_squared_LASSO
+# adj_r_squared_LASSO <- summary(LASSO_model)$adj.r.squared 
+# cat("Adjusted R^2 for Selected Model Using LASSO:")
+# adj_r_squared_LASSO
 ```
 
-```{r}
+```{r lasso-f-test}
 # F-test for full model and LASSO model
-cat("Table 10: F-test for Full and Model Selected with LASSO")
-anova(LASSO_model, full_model)
+# cat("Table 10: F-test for Full and Model Selected with LASSO")
+# anova(LASSO_model, full_model)
 ```
 
 Since the p-value is 0.351, at a 5% significance level, there is not sufficient evidence to reject the null hypothesis that the selected model by LASSO performs better than the full model.
 
-```{r}
+```{r lasso-testing}
 cat("Table 11: Summary Table for Selected Model with Testing Data")
-model_2 <- lm(actual_productivity ~ targeted_productivity +
-                    smv + incentive + idle_men + no_of_style_change, 
-              data = testing_data)
-model_summary_2 <- tidy(model_2)
-model_summary_2
-
-adj_r_squared_2 <- summary(model_2)$adj.r.squared 
-cat("Adjusted R^2 for LASSO Selected Model Using Testing Data:")
-adj_r_squared_2
+# model_2 <- lm(actual_productivity ~ targeted_productivity +
+#                     smv + incentive + idle_men + no_of_style_change, 
+#               data = testing_data)
+# model_summary_2 <- tidy(model_2)
+# model_summary_2
+# 
+# adj_r_squared_2 <- summary(model_2)$adj.r.squared 
+# cat("Adjusted R^2 for LASSO Selected Model Using Testing Data:")
+# adj_r_squared_2
 ```
 
 The adjusted $R^2$ suggests that about 16.9% of the adjusted variation in the response is explained by model. This reveals that forward selection performed slightly better in producing an inference model for the actual productivity of the factory.
