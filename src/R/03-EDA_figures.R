@@ -93,6 +93,7 @@ summary_table_1 <- data.filtered %>%
 
 ggsave(paste0(opt$out_dir, "/pair_plots.png"),
        pair_plots)
+write_csv(data.filtered, "data/filtered_data.csv")
 ggsave(paste0(opt$out_dir, "/day_boxplot.png"),
        day_boxplot)
 ggsave(paste0(opt$out_dir, "/half_boxplot.png"),

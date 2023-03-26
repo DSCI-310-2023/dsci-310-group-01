@@ -56,12 +56,12 @@ knitr::opts_chunk$set(echo = FALSE,
 
 ```
 
-```{r download-file}
+```{r download-file, echo=FALSE}
 data<-read.csv("../data/garments_worker_productivity.csv")
 knitr::kable(head(data,3), caption = "Initial Dataset")
 ```
 
-```{r clean-data}
+```{r clean-data, echo=FALSE}
 data.filtered<-read.csv("../data/filtered_data.csv")
 knitr::kable(head(data.filtered,3), caption = "Modified Dataset")
 ```
@@ -73,50 +73,39 @@ knitr::include_graphics("../results/pair_plots.png")
 ```
 
 From this plot, we can analyze the correlation values between the variables that we are using in our analysis. Based on the correlation values, there appears to be correlation between input variables, which will be addressed later in the analysis.
-Variables with relatively high correlations include `no_of_workers` and `smv`(0.912), `no_of_workers` and `over_time` (0.734), and `over_time` and `smv` (0.675).
+Variables with relatively high correlations (over 0.65) include `no_of_workers` and `smv`, `no_of_workers` and `over_time`, and `over_time` and `smv`.
 
 The high correlation indicates that the dataset has an issue of multicollinearity. To address this, the variable with the (`no_of_workers`) will be removed from our analysis.
 
-```{r day-boxplot, fig.cap="Actual Productivity by Day of the Week Boxplot", out.width="60%", echo=FALSE}
+```{r day-boxplot, fig.cap="Actual Productivity by Day of the Week Boxplot", out.width="50%", echo=FALSE}
 knitr::include_graphics("../results/day_boxplot.png")
 ```
 
-```{r half-boxplot, fig.cap="Actual Productivity by Half Boxplot", out.width="60%", echo=FALSE}
+```{r half-boxplot, fig.cap="Actual Productivity by Half Boxplot", out.width="50%", echo=FALSE}
 knitr::include_graphics("../results/half_boxplot.png")
 ```
 
-```{r department-boxplot, fig.cap="Actual Productivity of Departments Boxplot", out.width="60%", echo=FALSE}
+```{r department-boxplot, fig.cap="Actual Productivity of Departments Boxplot", out.width="50%", echo=FALSE}
 knitr::include_graphics("../results/department_boxplot.png")
 ```
 
 The above boxplots show the medians and variances of the discrete factors of interest. Since the above plots show that there are differences in the medians and variances of the factors of interest, it is justified to keep these factors in our analysis for future investigation.
 
-```{r actual-productivity-hist, fig.cap="Distribution of Actual Productivity", out.width="60%", echo=FALSE}
+```{r actual-productivity-hist, fig.cap="Distribution of Actual Productivity", out.width="50%", echo=FALSE}
 knitr::include_graphics("../results/actual_productivity_distribution.png")
 ```
 
 Since, the distribution of the actual productivity doesn't seem to have a normal distribution and is slightly left-skewed, an assumption of normality is likely needed in our analysis.
 
-```{r QQ-plot,  fig.cap="Q-Q Plot of Actual Productivity", out.width="60%", echo=FALSE}
+```{r QQ-plot,  fig.cap="Q-Q Plot of Actual Productivity", out.width="50%", echo=FALSE}
 knitr::include_graphics("../results/actual_productivity_qqplot.png")
 ```
 
 The above Q-Q plot was used to determine whether a normality assumption on our response variable is valid, since it is an assumption required for tests used later on. There appears to be tails on both ends, which suggests a left-skewness of the data. Unfortunately, while we have tried different transformations of the data, it did not improve the skewness of this Q-Q plot. So based on what we have learned in this class, we will have to assume normality of the data even though it is a major stretch.
 
-```{r summary-table-eda}
-# summary table of actual_productivity for different halves and departments
-# summary_table_1 <- data.filtered %>%
-#                    group_by(half, department) %>%
-#                    summarise(count = n(),
-#                              mean = mean(actual_productivity),
-#                              median = median(actual_productivity), 
-#                              min = min(actual_productivity),
-#                              max = max(actual_productivity),
-#                              sd = sd(actual_productivity), 
-#                             .groups = 'keep'
-#                             )
-# cat("Table 3: Summary of Actual Productivity for Halves and Departments")
-# summary_table_1
+```{r summary-table-eda, echo=FALSE}
+summary_table_1<-read.csv("../results/summary_table_1.csv")
+knitr::kable(summary_table_1, caption = "Summary of Actual Productivity for Halves and Departments")
 ```
 
 This table provides relevant summaries of our data, split into different quarters and departments. Overall, the data seems to be relatively consistent, with a few things to note:
@@ -125,7 +114,7 @@ This table provides relevant summaries of our data, split into different quarter
 - The standard deviation for the finishing department is slightly larger than the sewing department.
 
 ## Methods: Plan 
-The data set used is trustworthy and reliable since multiple published academic papers used this data set [@al2019deep], [@imran2021mining]). 
+The data set used is trustworthy and reliable since multiple published academic papers used this data set [@al2019deep], [@imran2021mining]. 
 
 Using the data set, we plan to analyze what factors are the most important in productivity. Linear regression will be used to determine the best inference model for the actual productivity of the factory. Using forward selection and LASSO, we plan to compare different models and determine which factors are the best in explaining relationships between the factors and the actual productivity of the garment factory. Additionally, we plan to test our optimal inference model’s performance by splitting the data into training and testing and comparing the corresponding adjusted $R^2$ values with the full model.
 
@@ -137,209 +126,128 @@ The results from this report could provide insights to companies in the garment 
 
 ### Generating the Model with Forward Selection 
 
-```{r train-test-split}
-# Split the data into two datasets: training dataset (75%) and testing dataset (25%)
-# set.seed(20221127)
-# 
-# data.filtered$ID <- 1:nrow(data.filtered)
-# new_data<-train_test_split(data.filtered, 0.75, "ID")
-# training_data<-as.data.frame(new_data[1])
-# testing_data<-as.data.frame(new_data[2])
-# 
-# #Remove ID varaible
-# training_data<-clean_data(training_data, "ID")
-# testing_data<-clean_data(testing_data, "ID")
-# 
-# cat("Table 4: Training Data")
-# head(training_data, 3)
-# 
-# cat("Table 5: Testing Data")
-# head(testing_data, 3)
+```{r train-test-split, echo=FALSE}
+training_data<-read.csv("../data/train_data.csv")
+knitr::kable(head(training_data,3), caption = "Top 3 Rows of Training Data")
+
+testing_data<-read.csv("../data/test_data.csv")
+knitr::kable(head(testing_data,3), caption = "Top 3 Rows of Testing Data")
 ```
 
-```{r forward-selection}
-# Use forward selection to select models with different number of input variables
-# model_forward_sel <- regsubsets(
-#   x = actual_productivity ~ .,
-#   nvmax = 12,
-#   data = training_data,
-#   method = "forward")
-# 
-# model_forward_summary <- summary(model_forward_sel)
-# model_forward_summary
-```
 
-```{r foward-selection evalutation}
-# store and examine different evaluation metrics contained in model_forward_summary
-# model_forward_summary_df <- tibble(
-#   n_input_variables = 1:11,
-#   RSQ = model_forward_summary$rsq,
-#   RSS = model_forward_summary$rss,
-#   ADJ.R2 = model_forward_summary$adjr2
-# )
-# cat("Table 6: Evaluation Metrics for Forward Selection")
-# model_forward_summary_df
-
-#format(model_forward_summary$adjr2, scientific = TRUE)
+```{r foward-selection-evalutation, echo = FALSE}
+forward_selection_summary_metrics<-read.csv("../results/forward_selection_summary_metrics.csv")
+knitr::kable(forward_selection_summary_metrics, caption = "Evaluation Metrics for Forward Selection")
 ```
 
 Adjusted $R^2$ was chosen as the metric used for model selection because it is best suited for our inference model. It compensates for the reduction of the RSS of a larger model making it a more suitable metric than $R^2$.
 
-As shown by the table above, the model with 6 input variables has the highest adj $R^2$ (0.23266), thus this model is chosen as the optimal model. However, its adjusted $R^2$ value is not relatively higher than many of the other models, suggesting that the model may be only slightly better than the others. The selected model will be compared with the full model to test this observation.
+As shown by the table above, the model with 6 input variables has the highest adj $R^2$, thus this model is chosen as the optimal model. However, its adjusted $R^2$ value is not relatively higher than many of the other models, suggesting that the model may be only slightly better than the others. The selected model will be compared with the full model to test this observation.
 
 The variables selected in the model with 6 input variables  were: `targeted_productivity`, `smv`, `wip`, `incentive`, `idle_men`, and `no_of_style_change`. 
 
-```{r summary-forward-selection}
-# Find Adj R^2 for chosen optimal model
-# cat("Table 7: Summary Table for Selected Model")
-# model_selected_1 <- lm(actual_productivity ~ targeted_productivity +
-#                     smv + wip + incentive + idle_men + no_of_style_change, 
-#                     data = training_data)
-# model_selected_summary_1 <- tidy(model_selected_1)
-# model_selected_summary_1
-# 
-# 
-# adj_r_squared_1 <- summary(model_selected_1)$adj.r.squared 
-# cat("Adjusted R^2 for Selected Model:")
-# adj_r_squared_1
+```{r summary-forward-selection, echo = FALSE}
+model_forward_summary<-read.csv("../results/forward_selection_model_summary.csv")
+knitr::kable(model_forward_summary, caption = "Forward Selection Model Summary")
 ```
 
-```{r assumptions-forward-selection}
-# Checking assumptions of selected model
-# cat("Figure 7: Residuals and Q-Q Plot of Selected Model")
-# plot(model_selected_1, 1:2)
+```{r adj-R2-forward-selection, echo = FALSE}
+adj_r_squared_1<-read.csv("../results/adj_R2_forward_selection_model.csv")
+adjr2_fs<-round(as.numeric(adj_r_squared_1$a),4)
+```
+Adjusted $R^2$ for Selected Model: `r adjr2_fs`
+
+```{r assumptions-plots,  fig.cap="Residuals of Selected Model", out.width="50%", echo=FALSE}
+knitr::include_graphics("../results/forward_selection_assumptions_plot1.png")
+```
+
+```{r assumptions-plots2,  fig.cap="QQ-plot of Selected Model", out.width="50%", echo=FALSE}
+knitr::include_graphics("../results/forward_selection_assumptions_plot2.png")
 ```
 
 The residual plot and the Q-Q plot suggests some violations of assumptions needed for our analysis. The residual plot shows slight heteroskedasticity within our model, which violates our equal variance assumption, and the q-q plot suggests a violation in our normality assumption. 
 
-```{r adj-R2-full-model}
-# Find Adj R^2 for chosen full model for future comparison with chosen model
-# cat("Table 8: Summary Table for Full Model")
-# full_model <- lm(actual_productivity ~ ., data = training_data)
-# full_model_summary <- tidy(full_model, 0.95, conf.int = TRUE)
-# full_model_summary
-# 
-# adj_r_squared_full <- summary(full_model)$adj.r.squared 
-# cat("Adjusted R^2 for Full Model:")
-# adj_r_squared_full
+```{r summary-full-model, echo = FALSE}
+full_model_summary<-read.csv("../results/full_model_summary.csv")
+knitr::kable(full_model_summary, caption = "Summary Table for Full Model")
 ```
 
-The adjusted $R^2$ of the selected model (0.2327) is slightly larger than (0.2300) the full model. This further suggests the selected model is not significantly better than the full model. An F-test will be conducted to test this observation.
+```{r adj-R2-full-model, echo = FALSE}
+adj_r_squared_1<-read.csv("../results/adj_R2_full_model.csv")
+adjr2_full<-round(as.numeric(adj_r_squared_1$a),4)
+```
+Adjusted $R^2$ for Full Model: `r adjr2_full`
 
-```{r f-test-forward-selection}
-# # F-test for the full model and the selected model 
-# cat("Table 9: F-test for Full and Selected Model")
-# anova(model_selected_1, full_model)
+The adjusted $R^2$ of the selected model (`r adjr2_fs`) is slightly larger than (`r adjr2_full`) the full model. This further suggests the selected model is not significantly better than the full model. An F-test will be conducted to test this observation.
+
+```{r f-test-forward-selection, echo = FALSE}
+f_test<-read.csv("../results/forward_selection_f_test.csv")
+p_fs<-round((f_test[6]) %>% filter(!is.na(.)),3)
+knitr::kable(f_test, caption = "F-test for Full and Selected Model")
 ```
 
-Since the p-value is 0.852, at a 5% significance level, there is not enough evidence to reject the null hypothesis that the selected model performs better than the full model.
+Since the p-value is `r p_fs`, at a 5% significance level, there is not enough evidence to reject the null hypothesis that the selected model performs better than the full model.
 
 ```{r forward-selection-test}
-# Testing Selected Model with Testing Data
-# cat("Table 9: Summary Table for Selected Model with Testing Data")
-# model_1 <- lm(actual_productivity ~ targeted_productivity +
-#                     smv + wip + incentive + idle_men + no_of_style_change, ,
-#               data = testing_data)
-# model_summary <- tidy(model_1)
-# model_summary
-# 
-# adj_r_squared <- summary(model_1)$adj.r.squared 
-# cat("Adjusted R^2 for Selected Model Using Testing Data:")
-# adj_r_squared
+model_summary<-read.csv("../results/forward_selection_test_summary.csv")
+knitr::kable(model_summary, caption = "Summary Table for Selected Model with Testing Data")
 ```
 
-The adjusted $R^2$ suggests that about 17% of the adjusted variation in the response is explained by model. This indicates that the model performs fairly poorly. However, since it was the best model according to our analysis it may suggest that further exploration of this topic is needed. Thus, model selection using LASSO is conducted next.
+```{r adj-R2-test, echo = FALSE}
+adj_r_squared_3<-read.csv("../results/forward_selection_adj_R2_test.csv")
+adjr2_test<-round(as.numeric(adj_r_squared_3$a),4)
+percent<-round(adjr2_test*100)
+```
+Adjusted $R^2$ for Selected Model Using Testing Data: `r adjr2_test`
+
+The adjusted $R^2$ suggests that about `r percent`% of the adjusted variation in the response is explained by model. This indicates that the model performs fairly poorly. However, since it was the best model according to our analysis it may suggest that further exploration of this topic is needed. Thus, model selection using LASSO is conducted next.
 
 ### Generating the Model with LASSO 
 
-```{r lasso-split}
-# split datasets into x matrix and y matrix for training and testing
-# data_X_train <- training_data %>% select(-"actual_productivity")  %>% data.matrix()
-# data_Y_train <- training_data %>% select("actual_productivity")  %>% data.matrix()
-# 
-# data_X_test <- testing_data %>% select(-"actual_productivity")  %>% data.matrix()
-# data_Y_test <- testing_data %>% select("actual_productivity")  %>% data.matrix()
+```{r lasso-lambda,  fig.cap="Lambda Selection by CV with LASSO", out.width="70%", echo=FALSE}
+knitr::include_graphics("../results/lasso_lambda_plot.png")
 ```
 
-```{r to-delete2}
-# find an "optimal" value of lambda using the function cv.glmnet()
-# data_cv_lambda_LASSO <- cv.glmnet(
-#   x = data_X_train, y = data_Y_train,
-#   alpha = 1)
-```
-
-```{r lasso-lambda}
-# visualize how the estimated test-MSE changes for different values of lambda
-# cat("Figure 8: Lambda Selection by CV with LASSO")
-# plot(data_cv_lambda_LASSO, main = "Lambda Selection by CV with LASSO")
-# 
-# # store the lambda value which provide the minimum estimated test-MSE
-# lambda_min_MSE_LASSO <- round(data_cv_lambda_LASSO$lambda.min, 4)
-```
-
-```{r to-delete3}
-# build a LASSO model 
-# data_LASSO_min <- glmnet(
-#   x = data_X_train, y = data_Y_train,
-#   alpha = 1,
-#   lambda = lambda_min_MSE_LASSO
-# )
-```
-
-```{r to-delete4}
-# get the selected input variables by the LASSO model
-# variables_selected_LASSO <- as_tibble(as.matrix(coef(data_LASSO_min)),rownames='covariate') %>%
-#                               filter(covariate != '(Intercept)' & abs(s0) > 10e-6) %>% 
-#                               pull(covariate)
-#variables_selected_LASSO
-```
 
 The variables selected in the model by LASSO were:  `targeted_productivity`, `smv`, `incentive`, `idle_men`, and `no_of_style_change`. 
 
-```{r to-delete5}
-# # the model selected by LASSO
-# LASSO_model <- lm(actual_productivity ~ targeted_productivity +
-#                     smv + incentive + idle_men + no_of_style_change, 
-#                   data = training_data)
+```{r lasso-assumptions-plots,  fig.cap="Residuals of Selected Model with LASSO", out.width="50%", echo=FALSE}
+knitr::include_graphics("../results/lasso_assumptions_plot1.png")
 ```
 
-```{r lasso-assumptions}
-# Checking assumptions of model selected by LASSO
-# cat("Figure 9: Residuals and Q-Q Plot of Model Selected by LASSO")
-# plot(LASSO_model, 1:2)
+```{r lasso-assumptions-plots2,  fig.cap="QQ-plot of Selected Model with LASSO", out.width="50%", echo=FALSE}
+knitr::include_graphics("../results/lasso_assumptions_plot2.png")
 ```
 
 Much like the model chosen by forward selection, the residual plot for the model selected by LASSO suggests unequal variance, and the Q-Q plot above suggests a normality violation of the variables. Attempts to mitigate this issue have failed, meaning we will have to continue with our analysis with very strong assumptions of our data.
 
-```{r lasso_adj_R2}
-# Adjusted R^2 for the model selected by LASSO
-# adj_r_squared_LASSO <- summary(LASSO_model)$adj.r.squared 
-# cat("Adjusted R^2 for Selected Model Using LASSO:")
-# adj_r_squared_LASSO
+```{r adj-R2-lasso, echo = FALSE}
+adj_r_squared_lasso<-read.csv("../results/adj_R2_lasso.csv")
+adjr2_lasso<-round(as.numeric(adj_r_squared_lasso$a),4)
 ```
+Adjusted $R^2$ for Selected Model `r adjr2_lasso`
 
 ```{r lasso-f-test}
-# F-test for full model and LASSO model
-# cat("Table 10: F-test for Full and Model Selected with LASSO")
-# anova(LASSO_model, full_model)
+f_test<-read.csv("../results/lasso_f_test.csv")
+p_lasso<-round((f_test[6]) %>% filter(!is.na(.)),3)
+knitr::kable(f_test, caption = "F-test for Full and Model Selected with LASSO")
 ```
 
-Since the p-value is 0.351, at a 5% significance level, there is not sufficient evidence to reject the null hypothesis that the selected model by LASSO performs better than the full model.
+Since the p-value is `r p_lasso`, at a 5% significance level, there is not sufficient evidence to reject the null hypothesis that the selected model by LASSO performs better than the full model.
 
-```{r lasso-testing}
-cat("Table 11: Summary Table for Selected Model with Testing Data")
-# model_2 <- lm(actual_productivity ~ targeted_productivity +
-#                     smv + incentive + idle_men + no_of_style_change, 
-#               data = testing_data)
-# model_summary_2 <- tidy(model_2)
-# model_summary_2
-# 
-# adj_r_squared_2 <- summary(model_2)$adj.r.squared 
-# cat("Adjusted R^2 for LASSO Selected Model Using Testing Data:")
-# adj_r_squared_2
+```{r lasso-test}
+model_summary<-read.csv("../results/lasso_test_summary.csv")
+knitr::kable(model_summary, caption = "Summary Table for Selected Model with Testing Data")
 ```
 
-The adjusted $R^2$ suggests that about 16.9% of the adjusted variation in the response is explained by model. This reveals that forward selection performed slightly better in producing an inference model for the actual productivity of the factory.
+```{r adj-R2-test-lasso, echo = FALSE}
+adj_r_squared_4<-read.csv("../results/adj_R2_test_lasso.csv")
+adjr2_test_lasso<-round(as.numeric(adj_r_squared_4$a),4)
+percent_l<-round(adjr2_test_lasso*100,1)
+```
+Adjusted $R^2$ for Selected Model Using Testing Data: `r adjr2_test_lasso`
+
+The adjusted $R^2$ suggests that about `r percent_l`% of the adjusted variation in the response is explained by model. This reveals that forward selection performed slightly better in producing an inference model for the actual productivity of the factory.
 
 # Discussion
 
@@ -348,10 +256,10 @@ The adjusted $R^2$ suggests that about 16.9% of the adjusted variation in the re
 
 The variables selected from forward selection in our model were: `targeted_productivity`, `smv`, `wip`, `incentive`, `idle_men`, and `no_of_style_change`. The variables selected from LASSO in our model were:  `targeted_productivity`, `smv`, `incentive`, `idle_men`, and `no_of_style_change`.
 
-Both of the models produced a fairly poor adjusted $R^2$ values of 0.17 and 0.169 when testing the model with the testing data. Additionally, neither of the selected models were significantly better than the full model according to the corresponding F-tests. 
+Both of the models produced a fairly poor adjusted $R^2$ values of `r adjr2_test` and `r adjr2_test_lasso` when testing the model with the testing data. Additionally, neither of the selected models were significantly better than the full model according to the corresponding F-tests. 
 
 ### Limitations 
-The relatively poor performance of both selected models and the non-significant results from the corresponding F-tests may be due to the assumptions made throughout our analysis. The techniques learned in this class were likely not able to overcome the limitations and assumptions made throughout our analysis. As shown by the various model assumption plots (Figures 5,7,9) throughout the analysis, the assumptions of equal variance and normality were used when analyzing the response variable, as well as both of the models selected via forward selection and LASSO. 
+The relatively poor performance of both selected models and the non-significant results from the corresponding F-tests may be due to the assumptions made throughout our analysis. The techniques learned in this class were likely not able to overcome the limitations and assumptions made throughout our analysis. As shown by the various model assumption plots throughout the analysis, the assumptions of equal variance and normality were used when analyzing the response variable, as well as both of the models selected via forward selection and LASSO. 
 
 The assumption of normality was required for the F-tests used near the end of our analysis. With our diagnostic plots shown earlier showing some violation of the assumption, it may impact our results when testing for whether the models we selected were statistically different than the full model.
 
