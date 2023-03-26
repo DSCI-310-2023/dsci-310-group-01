@@ -31,13 +31,13 @@ train_test_split <- function(df, train_percent, col_name) {
   }
   
   training_data <- dplyr::sample_n(df, size = nrow(df) * train_percent,
-                            replace = FALSE
+                                   replace = FALSE
   )
   
   testing_data <- dplyr::anti_join(df,
-                            training_data,
-                            by = {{col_name}}
-                            
+                                   training_data,
+                                   by = {{col_name}}
+                                   
   )
   
   return (list(training_data, testing_data))
