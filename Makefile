@@ -42,7 +42,60 @@ results/summary_table_1.csv : data/cleaned_data.csv src/R/03-EDA_figures.R
 
 # data pre-processing: split into training and testing sets
 data/train_data.csv : data/cleaned_data.csv src/R/04-train_test_split.R
-		Rscript src/R/04-train_test_split.R --input="data/filtered_data.csv" --out_dir="results"
+		Rscript src/R/04-train_test_split.R --input="data/filtered_data.csv" --out_dir="data"
 
 data/test_data.csv : data/cleaned_data.csv src/R/04-train_test_split.R
-		Rscript src/R/04-train_test_split.R --input="data/filtered_data.csv" --out_dir="results"
+		Rscript src/R/04-train_test_split.R --input="data/filtered_data.csv" --out_dir="data"
+
+# model selection with forward selection
+results/forward_selection_summary_metrics.csv : data/train_data.csv data/test_data.csv src/R/05-forward_selection.R
+		Rscript src/R/05-forward_selection.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+		
+results/forward_selection_model_summary.csv : data/train_data.csv data/test_data.csv src/R/05-forward_selection.R
+		Rscript src/R/05-forward_selection.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+		
+results/adj_R2_forward_selection_model.csv : data/train_data.csv data/test_data.csv src/R/05-forward_selection.R
+		Rscript src/R/05-forward_selection.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+		
+results/forward_selection_assumptions_plot1.png : data/train_data.csv data/test_data.csv src/R/05-forward_selection.R
+		Rscript src/R/05-forward_selection.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+		
+results/forward_selection_assumptions_plot2.png : data/train_data.csv data/test_data.csv src/R/05-forward_selection.R
+		Rscript src/R/05-forward_selection.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+		
+results/full_model_summary.csv : data/train_data.csv data/test_data.csv src/R/05-forward_selection.R
+		Rscript src/R/05-forward_selection.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+		
+results/adj_R2_full_model.csv : data/train_data.csv data/test_data.csv src/R/05-forward_selection.R
+		Rscript src/R/05-forward_selection.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+		
+results/forward_selection_f_test.csv : data/train_data.csv data/test_data.csv src/R/05-forward_selection.R
+		Rscript src/R/05-forward_selection.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+		
+results/forward_selection_test_summary.csv : data/train_data.csv data/test_data.csv src/R/05-forward_selection.R
+		Rscript src/R/05-forward_selection.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+		
+results/forward_selection_adj_R2_test.csv : data/train_data.csv data/test_data.csv src/R/05-forward_selection.R
+		Rscript src/R/05-forward_selection.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+		
+# model selection with lasso
+results/lasso_lambda_plot.png : data/train_data.csv data/test_data.csv src/R/Rscript src/R/06-lasso.R
+		Rscript src/R/06-lasso.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+
+results/lasso_assumptions_plot1.png : data/train_data.csv data/test_data.csv src/R/Rscript src/R/06-lasso.R
+		Rscript src/R/06-lasso.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+	
+results/lasso_assumptions_plot2.png : data/train_data.csv data/test_data.csv src/R/Rscript src/R/06-lasso.R
+		Rscript src/R/06-lasso.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+
+results/adj_R2_lasso.csv : data/train_data.csv data/test_data.csv src/R/Rscript src/R/06-lasso.R
+		Rscript src/R/06-lasso.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+
+results/lasso_f_test.csv : data/train_data.csv data/test_data.csv src/R/Rscript src/R/06-lasso.R
+		Rscript src/R/06-lasso.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+
+results/lasso_test_summary.csv : data/train_data.csv data/test_data.csv src/R/Rscript src/R/06-lasso.R
+		Rscript src/R/06-lasso.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"
+	
+results/adj_R2_test_lasso.csv : data/train_data.csv data/test_data.csv src/R/Rscript src/R/06-lasso.R
+		Rscript src/R/06-lasso.R --input="data/train_data.csv" --input2="data/test_data.csv" --out_dir="results"

@@ -27,7 +27,7 @@ source(here("src/R/clean_data.R"))
 source(here("src/R/train_test_split.R"))
 
 opt <- docopt(doc)
-
+set.seed(20221127)
 data.filtered <- read_csv(opt$input)
 data.filtered$ID <- 1:nrow(data.filtered)
 new_data<-train_test_split(data.filtered, 0.75, "ID")

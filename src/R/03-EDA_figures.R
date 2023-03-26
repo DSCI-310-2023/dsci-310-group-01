@@ -12,7 +12,7 @@
 
 doc<-"
 Usage:
-  src/R/02-clean_data.R --input=<input> --out_dir=<output_dir>
+  src/R/03-EDA_figures --input=<input> --out_dir=<output_dir>
     Options:
     --input=<input>		
       --out_dir=<output_dir>		
