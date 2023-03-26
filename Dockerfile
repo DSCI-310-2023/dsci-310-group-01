@@ -1,5 +1,10 @@
 FROM rocker/rstudio:4.1.3 
 
+# update ubuntu repos and install tidyverse system dependencies
+RUN apt update -y
+RUN apt install -y libcurl4-openssl-dev libssl-dev libxml2-dev zlib1g-dev
+
+# Install R packages 
 RUN Rscript -e "install.packages('tidyverse', version ='1.3.2', repos = 'http://cran.us.r-project.org')"
 RUN Rscript -e "install.packages('broom', version ='1.0.3', repos = 'http://cran.us.r-project.org')"
 RUN Rscript -e "install.packages('GGally', version ='2.1.2', repos = 'http://cran.us.r-project.org')"
