@@ -63,18 +63,10 @@ LASSO_model <- lm(actual_productivity ~ targeted_productivity +
                     smv + incentive + idle_men + no_of_style_change, 
                   data = training_data)
 
-
-
 assumptions1<-as.ggplot(function() plot(LASSO_model, 1))
 assumptions2<-as.ggplot(function() plot(LASSO_model, 2))
-# assumptions1<- ggplot(model_selected_1, aes(x = .fitted, y = .resid)) +
-#   geom_point() +
-#   geom_hline(yintercept = 0)
-# 
-# assumptions2 <- ggplot(model_selected_1, aes(sample = .fitted)) + stat_qq() + stat_qq_line()+
-#   labs(title ="Normal Q-Q Plot", x ="Theoretical Quantities", y = "Sample Quantiles")
 
-adj_r_squared_LASSO <- tibble(summary(LASSO_model)$adj.r.squared)
+adj_r_squared_LASSO <- tibble(a=summary(LASSO_model)$adj.r.squared)
 
 full_model <- lm(actual_productivity ~ ., data = training_data)
 
@@ -86,7 +78,7 @@ model_2 <- lm(actual_productivity ~ targeted_productivity +
               data = testing_data)
 model_summary_2 <- tidy(model_2)
 
-adj_r_squared_2 <- tibble(summary(model_2)$adj.r.squared)
+adj_r_squared_2 <- tibble(a=summary(model_2)$adj.r.squared)
 
 ggsave(paste0(opt$out_dir, "/lasso_lambda_plot.png"),
        lasso_plot)

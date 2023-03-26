@@ -38,6 +38,6 @@ main <- function(input, out_dir) {
     clean_data(., "quarter") %>%
     mutate(day = as.factor(day)) %>%
     mutate(half = as.factor(half))
-  write_csv(data.filtered, paste0(opt$out_dir, "/filtered_data.csv"))
+  write_csv(data.filtered, paste0(opt$out_dir, "/filtered_data_init.csv"))
 }
 main(opt[["--input"]], opt[["--out_dir"]])

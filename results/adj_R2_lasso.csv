@@ -1,2 +1,2 @@
-summary(LASSO_model)$adj.r.squared
+a
 0.22944867265605562

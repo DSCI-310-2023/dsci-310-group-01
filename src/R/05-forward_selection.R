@@ -29,6 +29,7 @@ suppressPackageStartupMessages({
   library(leaps)
   library(glmnet)
   library(docopt)
+  library(ggplotify)
 })
 options(repr.plot.width = 10, repr.plot.height = 14)
 
@@ -46,7 +47,7 @@ model_forward_sel <- regsubsets(
 model_forward_summary <- summary(model_forward_sel)
 
 model_forward_summary_df <- data.frame(
-  n_input_variables = 1:12,
+  n_input_variables = 1:11,
   RSQ = model_forward_summary$rsq,
   RSS = model_forward_summary$rss,
   ADJ.R2 = model_forward_summary$adjr2
@@ -56,20 +57,15 @@ model_selected_1 <- lm(actual_productivity ~ targeted_productivity +
                        data = training_data)
 model_selected_summary_1 <- tidy(model_selected_1)
 
-adj_r_squared_1 <- tibble(summary(model_selected_1)$adj.r.squared)
+adj_r_squared_1 <- tibble(a=summary(model_selected_1)$adj.r.squared)
 
-assumptions1<- ggplot(model_selected_1, aes(x = .fitted, y = .resid)) +
-  geom_point() +
-  geom_hline(yintercept = 0)
-
-assumptions2 <- ggplot(model_selected_1, aes(sample = .fitted)) + stat_qq() + stat_qq_line()+
-  labs(title ="Normal Q-Q Plot", x ="Theoretical Quantities", y = "Sample Quantiles")
-
+assumptions1<-as.ggplot(function() plot(model_selected_1, 1))
+assumptions2<-as.ggplot(function() plot(model_selected_1, 2))
 
 full_model <- lm(actual_productivity ~ ., data = training_data)
 full_model_summary <- tidy(full_model, 0.95, conf.int = TRUE)
 
-adj_r_squared_full <- tibble(summary(full_model)$adj.r.squared)
+adj_r_squared_full <- tibble(a=summary(full_model)$adj.r.squared)
 
 f_test<-anova(model_selected_1, full_model)
 
@@ -79,7 +75,7 @@ model_1 <- lm(actual_productivity ~ targeted_productivity +
               data = testing_data)
 model_summary <- tidy(model_1)
 
-adj_r_squared <- tibble(summary(model_1)$adj.r.squared)
+adj_r_squared <- tibble(a=summary(model_1)$adj.r.squared)
 
 write_csv(model_forward_summary_df, paste0(opt$out_dir, "/forward_selection_summary_metrics.csv"))
 write_csv(model_selected_summary_1, paste0(opt$out_dir, "/forward_selection_model_summary.csv"))
