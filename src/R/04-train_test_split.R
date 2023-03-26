@@ -15,30 +15,26 @@
 #'
 #' @examples
 #' train_test_split(garment_Data, 0.75, "ID")
-train_test_split <- function(df, train_percent, col_name) {
-  if (!is.data.frame(df)) {
-    stop("data must be a data frame. Please try again.")
-  }
-  
-  if (train_percent <= 0 || train_percent > 1) {
-    stop("train_percent must be between 0 (exclusive) and 1 (inclusive). Please try again.")
-  }
-  
-  col_names <- names(df)
-  
-  if (!(col_name %in% col_names)) {
-    stop("Please enter a column name from within the provided data frame")
-  }
-  
-  training_data <- dplyr::sample_n(df, size = nrow(df) * train_percent,
-                            replace = FALSE
-  )
-  
-  testing_data <- dplyr::anti_join(df,
-                            training_data,
-                            by = {{col_name}}
-                            
-  )
-  
-  return (list(training_data, testing_data))
-}
+"This file ensures we get a user specfied percent break within the dataframe to
+allow us to fetch a testing and training data frame that will be passed forward
+into analytical methods such as lasso and forward regression models
+
+Usage: src/R/train_test_split.R <percent> <col_name> <out_dir>
+" -> doc
+source("./train_test_split.R")
+
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(broom)
+  library(GGally)
+  library(leaps)
+  library(glmnet)
+  library(docopt)
+})
+
+opt <- docopt(doc)
+
+c(train_data, test_data) = train_test_split(opt$df, opt$percent, opt$col_name)
+
+write_csv(train_data, paste0(opt$out_dir, "/train_data.csv"))
+write_csv(test_data, paste0(opt$out_dir, "/test_data.csv"))
