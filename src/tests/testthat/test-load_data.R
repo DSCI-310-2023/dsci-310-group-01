@@ -7,5 +7,4 @@ test_that("`load_data` should report an error when a string of a URL is not inpu
 
 test_that("`load_data` should return a data frame", {
   expect_s3_class(load_data(test_url), "data.frame")
-  
 })
