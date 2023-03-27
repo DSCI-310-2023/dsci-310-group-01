@@ -29,10 +29,14 @@ To answer this question, we performed data analysis to search for the most optim
    ```
 4b. Obtain the docker image from Dockerhub:
    ```
-   1. docker pull jwong086/dsci-310-group-01:latest 
-   2. docker images jwong086/dsci-310-group-01
-   3. Copy the IMAGE ID in the third column
-   4. docker tag <IMAGE ID> dsci-310-group-01-env
+   docker pull jwong086/dsci-310-group-01:latest 
+   ```
+   ```
+   docker images jwong086/dsci-310-group-01 
+   ```
+    Copy the IMAGE ID in the third column
+  ```
+   docker tag <IMAGE ID> dsci-310-group-01-env
    ```
 5. Run the following to set up the environment:
    ```
