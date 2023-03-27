@@ -63,7 +63,7 @@ The corresponding analysis files are found [here](https://github.com/jw327/dsci-
 Using R version 4.2.2
 
 ### R libraries
-- `tidyverse:1.3.2`
+- `tidyverse:1.3.1`
 - `broom:1.0.3`
 - `ggally:2.1.2`
 - `leaps:3.1`
@@ -73,6 +73,7 @@ Using R version 4.2.2
 - `docopt:0.7.1`
 - `here:1.0.1`
 - `bookdown:0.1.0`
+- `rmarkdown:2.13`
 
 ## License 
 Licensed under the MIT License and
