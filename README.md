@@ -23,15 +23,26 @@ To answer this question, we performed data analysis to search for the most optim
    ```
    cd dsci-310-group-01
    ```
-4. Run the the following to obtain the docker image:
+4a. Run the the following to obtain the docker image:
    ```
    docker build --tag dsci-310-group-01-env . 
+   ```
+4b. Obtain the docker image from Dockerhub:
+   ```
+   1. docker pull jwong086/dsci-310-group-01:latest 
+   2. docker images jwong086/dsci-310-group-01
+   3. Copy the IMAGE ID in the third column
+   4. docker tag <IMAGE ID> dsci-310-group-01-env
    ```
 5. Run the following to set up the environment:
    ```
    docker run --rm -p 8787:8787 -e PASSWORD=x  -v /$(pwd):/home/rstudio/project dsci-310-group-01-env
    ```
-6. Use the following credentials to sign in:
+6. In a browser navigate to:
+   ```
+   localhost:8787:8787
+   ```
+7. Use the following credentials to sign in:
    ```
    - USERNAME = rstudio
    - PASSWORD = x
