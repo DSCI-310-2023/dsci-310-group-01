@@ -1,4 +1,3 @@
-
 # Inputs for tests for create_boxplot.R
 not_df1 <- 5
 not_df2 <- "y"
