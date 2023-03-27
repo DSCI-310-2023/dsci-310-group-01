@@ -23,11 +23,12 @@ To answer this question, we performed data analysis to search for the most optim
    ```
    cd dsci-310-group-01
    ```
-4a. Run the the following to obtain the docker image:
+4. Obtain/build the Docker Image
+a. Run the the following to obtain the Docker Image:
    ```
    docker build --tag dsci-310-group-01-env . 
    ```
-4b. Obtain the docker image from Dockerhub:
+b. Obtain the Docker Image from Dockerhub:
    ```
    docker pull jwong086/dsci-310-group-01:latest 
    ```
