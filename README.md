@@ -29,13 +29,15 @@ To answer this question, we performed data analysis to search for the most optim
    docker build --tag dsci-310-group-01-env . 
    ```
 - b. Obtain the Docker Image from Dockerhub:
+   - Use the terminal/command line to pull the image
    ```
-   docker build --tag dsci-310-group-01-env . 
+   docker pull jwong086/dsci-310-group-01:latest 
    ```
+   - Use the terminal/command line to find the IMAGE ID
    ```
    docker images jwong086/dsci-310-group-01 
   ```
-   - Copy the IMAGE ID in the third column
+   - Copy the IMAGE ID in the third column and use the terminal/command the tag the image
    ```
    docker tag <IMAGE ID> dsci-310-group-01-env
    ```
