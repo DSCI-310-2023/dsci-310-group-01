@@ -25,19 +25,19 @@ To answer this question, we performed data analysis to search for the most optim
    ```
 4. Obtain/build the Docker Image
 - a. Run the the following to obtain the Docker Image:
-  -  ```
+   ```
    docker build --tag dsci-310-group-01-env . 
    ```
 - b. Obtain the Docker Image from Dockerhub:
    ```
-   - docker build --tag dsci-310-group-01-env . 
+   docker build --tag dsci-310-group-01-env . 
    ```
    ```
-   - docker images jwong086/dsci-310-group-01 
+   docker images jwong086/dsci-310-group-01 
   ```
-    - Copy the IMAGE ID in the third column
+   - Copy the IMAGE ID in the third column
    ```
-   - docker tag <IMAGE ID> dsci-310-group-01-env
+   docker tag <IMAGE ID> dsci-310-group-01-env
    ```
 5. Run the following to set up the environment:
    ```
