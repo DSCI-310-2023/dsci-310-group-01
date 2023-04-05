@@ -47,7 +47,7 @@ To answer this question, we performed data analysis to search for the most optim
    ```
 6. In a browser navigate to:
    ```
-   localhost:8787:8787
+   [localhost:8787:8787](https://localhost:8787)
    ```
 7. Use the following credentials to sign in:
    ```
@@ -92,6 +92,7 @@ Using R version 4.2.2
 - `here:1.0.1`
 - `bookdown:0.1.0`
 - `rmarkdown:2.13`
+- `ggplotify:0.1.0`
 
 ## License 
 Licensed under the MIT License and
