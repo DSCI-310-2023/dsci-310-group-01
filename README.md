@@ -41,10 +41,16 @@ To answer this question, we performed data analysis to search for the most optim
    docker run --rm -p 8787:8787 -e PASSWORD=x  -v /$(pwd):/home/rstudio/project dsci-310-group-01-env
    ```
 6. In a browser navigate to:
-   [localhost:8787:8787](https://localhost:8787)
+   ```
+   https://localhost:8787
+   ```
 7. Use the following credentials to sign in:
    - USERNAME = `rstudio`
    - PASSWORD = `x`
+8. Navigate to the `/project` folder and in the Rstudio terminal run the following to produce the html report:
+   ```
+   make report
+   ```
 
 ### Using Makefile
 1. Install the listed [dependencies](#dependencies) below
