@@ -45,7 +45,6 @@ To answer this question, we performed data analysis to search for the most optim
 7. Use the following credentials to sign in:
    - USERNAME = `rstudio`
    - PASSWORD = `x`
-   ```
 
 ### Using Makefile
 1. Install the listed [dependencies](#dependencies) below
