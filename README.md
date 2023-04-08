@@ -31,7 +31,7 @@ To answer this question, we performed data analysis to search for the most optim
    - Use the terminal/command line to find the IMAGE ID
    ```
    docker images jwong086/dsci-310-group-01 
-  ```
+   ```
    - Copy the IMAGE ID in the third column and use the terminal/command the tag the image
    ```
    docker tag <IMAGE ID> dsci-310-group-01-env
