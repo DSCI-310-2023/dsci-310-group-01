@@ -1,18 +1,20 @@
-FROM rocker/rstudio:4.1.3 
+FROM rocker/verse:4.2.2
 
-# Update ubuntu and install tidyverse system dependencies
-RUN apt update -y
-RUN apt install -y libcurl4-openssl-dev libssl-dev libxml2-dev zlib1g-dev
+
+# Install R and tidyverse
+RUN apt-get update && \
+    apt-get install -y r-base && \
+    R -e "install.packages('tidyverse', repos = 'http://cran.us.r-project.org')"
 
 # Install R packages 
-RUN Rscript -e "install.packages('tidyverse', version ='1.3.1', repos = 'http://cran.us.r-project.org')"
-RUN Rscript -e "install.packages('broom', version ='1.0.3', repos = 'http://cran.us.r-project.org')"
-RUN Rscript -e "install.packages('GGally', version ='2.1.2', repos = 'http://cran.us.r-project.org')"
-RUN Rscript -e "install.packages('leaps', version ='3.1', repos = 'http://cran.us.r-project.org')"
-RUN Rscript -e "install.packages('glmnet', version ='4.1-6', repos = 'http://cran.us.r-project.org')"
-RUN Rscript -e "install.packages('testthat', version ='3.1.6', repos = 'http://cran.us.r-project.org')"
-RUN Rscript -e "install.packages('bookdown', version ='0.33', repos = 'http://cran.us.r-project.org')"
-RUN Rscript -e "install.packages('docopt', version ='0.7.1', repos = 'http://cran.us.r-project.org')"
-RUN Rscript -e "install.packages('here', version ='1.0.1', repos = 'http://cran.us.r-project.org')"
-RUN Rscript -e "install.packages('ggplotify', version ='0.1.0', repos = 'http://cran.us.r-project.org')"
-RUN Rscript -e "install.packages('rmarkdown', version ='2.13', repos = 'http://cran.us.r-project.org')"
+RUN R -e "install.packages('remotes', repos='http://cran.rstudio.com/')"
+RUN Rscript -e "remotes::install_version('broom', version ='1.0.3', repos = 'http://cran.us.r-project.org')"
+RUN Rscript -e "remotes::install_version('GGally', version ='2.1.2', repos = 'http://cran.us.r-project.org')"
+RUN Rscript -e "remotes::install_version('leaps', version ='3.1', repos = 'http://cran.us.r-project.org')"
+RUN Rscript -e "remotes::install_version('glmnet', version ='4.1-6', repos = 'http://cran.us.r-project.org')"
+RUN Rscript -e "remotes::install_version('testthat', version ='3.1.6', repos = 'http://cran.us.r-project.org')"
+RUN Rscript -e "remotes::install_version('bookdown', version ='0.33', repos = 'http://cran.us.r-project.org')"
+RUN Rscript -e "remotes::install_version('docopt', version ='0.7.1', repos = 'http://cran.us.r-project.org')"
+RUN Rscript -e "remotes::install_version('here', version ='1.0.1', repos = 'http://cran.us.r-project.org')"
+RUN Rscript -e "remotes::install_version('ggplotify', version ='0.1.0', repos = 'http://cran.us.r-project.org')"
+RUN Rscript -e "remotes::install_version('rmarkdown', version ='2.13', repos = 'http://cran.us.r-project.org')"

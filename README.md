@@ -23,12 +23,7 @@ To answer this question, we performed data analysis to search for the most optim
    ```
    cd dsci-310-group-01
    ```
-4. Obtain/build the Docker Image
-- a. Run the the following to obtain the Docker Image:
-   ```
-   docker build --tag dsci-310-group-01-env . 
-   ```
-- b. Obtain the Docker Image from Dockerhub:
+4. Obtain the Docker Image from Dockerhub
    - Use the terminal/command line to pull the image
    ```
    docker pull jwong086/dsci-310-group-01:latest 
@@ -48,9 +43,8 @@ To answer this question, we performed data analysis to search for the most optim
 6. In a browser navigate to:
    [localhost:8787:8787](https://localhost:8787)
 7. Use the following credentials to sign in:
-   ```
-   - USERNAME = rstudio
-   - PASSWORD = x
+   - USERNAME = `rstudio`
+   - PASSWORD = `x`
    ```
 
 ### Using Makefile
@@ -79,7 +73,8 @@ The corresponding analysis files are found [here](https://github.com/jw327/dsci-
 Using R version 4.2.2
 
 ### R libraries
-- `tidyverse:1.3.1`
+- `remotes:2.4.2`
+- `tidyverse:2.0.0`
 - `broom:1.0.3`
 - `ggally:2.1.2`
 - `leaps:3.1`
