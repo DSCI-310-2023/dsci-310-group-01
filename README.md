@@ -17,7 +17,7 @@ To answer this question, we performed data analysis to search for the most optim
 1. Install [Docker](https://www.docker.com/get-started)
 2. Clone the repository
    ```
-   git clone https://github.com/jw327/dsci-310-group-01.git
+   git clone https://github.com/DSCI-310/dsci-310-group-01.git
    ```
 3. Use the terminal/command line to navigate to the root directory of the project
    ```
@@ -66,7 +66,7 @@ To answer this question, we performed data analysis to search for the most optim
 1. Install the listed [dependencies](#dependencies) below
 2. Clone the repository
    ```
-   git clone https://github.com/jw327/dsci-310-group-01.git
+   git clone https://github.com/DSCI-310/dsci-310-group-01.git
    ```
 3. Use the terminal/command line to navigate to the root directory of the project
    ```
@@ -85,7 +85,7 @@ To answer this question, we performed data analysis to search for the most optim
    make all
    ```
 ## Viewing the Analysis
-The corresponding analysis files are found [here](https://github.com/jw327/dsci-310-group-01/tree/main/notebooks).
+The corresponding analysis files are found [here](https://github.com/DSCI-310/dsci-310-group-01/tree/main/notebooks).
 
 ## Dependencies
 Using R version 4.2.2
