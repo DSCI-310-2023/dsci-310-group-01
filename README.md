@@ -99,9 +99,8 @@ Using R version 4.2.2
 - `bookdown:0.33`
 - `docopt:0.7.1`
 - `here:1.0.1`
-- `bookdown:0.1.0`
-- `rmarkdown:2.13`
 - `ggplotify:0.1.0`
+- `rmarkdown:2.13`
 - `devtools:2.4.5`
 - `grp1ProjectPackage:1.0.0`
 
