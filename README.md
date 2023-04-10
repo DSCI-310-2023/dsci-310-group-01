@@ -51,11 +51,11 @@ To answer this question, we performed data analysis to search for the most optim
    ```
    make report
    ```
-9. To reset the repo to a clean state use:
+   - To reset the repo to a clean state use:
    ```
    make clean
    ```
-10. To obtain the files needed to `make report` from clean slate use:
+   - To obtain the files needed to `make report` from clean slate use:
    ```
    make all
    ```  
