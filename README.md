@@ -102,7 +102,7 @@ Using R version 4.2.2
 - `docopt:0.7.1`
 - `here:1.0.1`
 - `ggplotify:0.1.0`
-- `rmarkdown:2.13`
+- `rmarkdown:2.21`
 - `devtools:2.4.5`
 - `grp1ProjectPackage:1.0.0`
 
