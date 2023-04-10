@@ -20,9 +20,9 @@ suppressPackageStartupMessages({
   library(glmnet)
   library(here)
   library(docopt)
+  library(grp1ProjectPackage)
 })
 
-source(here("src/R/clean_data.R"))
 
 opt <- docopt(doc)
 main <- function(input, out_dir) {

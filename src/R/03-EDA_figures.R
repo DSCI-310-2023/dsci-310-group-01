@@ -26,10 +26,9 @@ suppressPackageStartupMessages({
   library(glmnet)
   library(here)
   library(docopt)
+  library(grp1ProjectPackage)
 })
 
-source(here("src/R/clean_data.R"))
-source(here("src/R/create_boxplot.R"))
 
 opt <- docopt(doc)
 

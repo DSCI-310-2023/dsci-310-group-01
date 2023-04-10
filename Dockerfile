@@ -18,3 +18,7 @@ RUN Rscript -e "remotes::install_version('docopt', version ='0.7.1', repos = 'ht
 RUN Rscript -e "remotes::install_version('here', version ='1.0.1', repos = 'http://cran.us.r-project.org')"
 RUN Rscript -e "remotes::install_version('ggplotify', version ='0.1.0', repos = 'http://cran.us.r-project.org')"
 RUN Rscript -e "remotes::install_version('rmarkdown', version ='2.13', repos = 'http://cran.us.r-project.org')"
+RUN Rscript -e "remotes::install_version('devtools','2.4.5', repos = 'http://cran.us.r-project.org')"
+
+#install the package made for project
+RUN Rscript -e "devtools::install_github('DSCI-310/dsci-310-group-01-pkg')"
