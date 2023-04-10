@@ -30,8 +30,8 @@ suppressPackageStartupMessages({
   library(glmnet)
   library(docopt)
   library(ggplotify)
+  library(grp1ProjectPackage)
 })
-options(repr.plot.width = 10, repr.plot.height = 14)
 
 opt <- docopt(doc)
 

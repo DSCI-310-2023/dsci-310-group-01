@@ -21,10 +21,9 @@ suppressPackageStartupMessages({
   library(glmnet)
   library(here)
   library(docopt)
+  library(grp1ProjectPackage)
 })
 
-source(here("src/R/clean_data.R"))
-source(here("src/R/train_test_split.R"))
 
 opt <- docopt(doc)
 set.seed(20221127)
