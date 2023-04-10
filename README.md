@@ -51,6 +51,14 @@ To answer this question, we performed data analysis to search for the most optim
    ```
    make report
    ```
+9. To reset the repo to a clean state use:
+   ```
+   make clean
+   ```
+10. To obtain the files needed to `make report` from clean slate use:
+   ```
+   make all
+   ```  
 
 ### Using Makefile
 1. Install the listed [dependencies](#dependencies) below
@@ -70,7 +78,10 @@ To answer this question, we performed data analysis to search for the most optim
    ```
    make clean
    ```
-
+6. To obtain the files needed to make report from clean slate use:
+   ```
+   make all
+   ```
 ## Viewing the Analysis
 The corresponding analysis files are found [here](https://github.com/jw327/dsci-310-group-01/tree/main/notebooks).
 
